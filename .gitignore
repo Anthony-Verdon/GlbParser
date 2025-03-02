@@ -1,4 +1,4 @@
 build
 .xmake
 exe
-output.*
+output*
