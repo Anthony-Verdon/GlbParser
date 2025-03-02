@@ -1,6 +1,7 @@
 #include "GlbParser/GlbParser.hpp"
 #include <stdexcept>
 #include <iostream>
+
 int main(int argc, char **argv)
 {
     try
