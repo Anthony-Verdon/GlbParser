@@ -2,6 +2,7 @@
 #include "Utils/Utils.hpp"
 #include <cassert>
 #include <cctype> 
+#include <iostream>
 
 namespace JsonParser
 {
@@ -22,7 +23,7 @@ namespace JsonParser
         JsonMap json;
         while (*it != '}')
         {
-            const auto [key, value] = RetriveKeyValuePair(text, it);
+            const auto [key, value] = RetrieveKeyValuePair(text, it);
             json[key] = value;
 
             while (*it == ' ' || *it == '\n')
@@ -33,7 +34,7 @@ namespace JsonParser
         return json;
     }
 
-    std::pair<std::string, JsonValue> RetriveKeyValuePair(const std::string& text, stringIt& it)
+    std::pair<std::string, JsonValue> RetrieveKeyValuePair(const std::string& text, stringIt& it)
     {
         assert(it != text.end());
 
@@ -62,12 +63,24 @@ namespace JsonParser
         {
             value = ParseJson(text, it);
         }
-        else
+        else if (isdigit(*it))
         {
             currentIt = it;
             while (isdigit(*it) || *it == '.')
                 it++;
             value = ParsePrimitive(text, currentIt, it);
+        }
+        else if (*it == '"')
+        {
+            currentIt = it++;
+            while (*it != '"')
+                it++;
+            it++;
+            value = ParseString(text, currentIt, it);
+        }
+        else
+        {
+            value = ParseKeyword(text, it);
         }
 
         if (*it == ',')
@@ -81,10 +94,34 @@ namespace JsonParser
         std::string substr = text.substr(start - text.begin(), end - start);
         int pointIndex = substr.find(".");
 
-        if (pointIndex >= (end - start)) // integer
+        if (pointIndex == -1) // integer
             return std::stoi(substr);
-        else                             // float(double)
+        else                  // float(double)
             return std::stod(substr);
+    }
+
+    JsonValue ParseString(const std::string &text, stringIt &start, stringIt &end)
+    {
+        return (text.substr(start - text.begin(), end - start));
+    }
+
+    JsonValue ParseKeyword(const std::string &text, stringIt &it)
+    {
+        stringIt currentIt = it;
+        it = it + 4;
+
+        if (text.substr(currentIt - text.begin(), it - currentIt) == "true")
+            return (true);
+        else if (text.substr(currentIt - text.begin(), it - currentIt) == "null")
+            return (nullptr);
+        else
+        {
+            it++;
+            if (text.substr(currentIt - text.begin(), it - currentIt) == "false")
+                return (false);
+            else
+                return (nullptr);
+        }
     }
 
     std::ostream &operator<<(std::ostream &os, const JsonValue &json)
@@ -94,6 +131,12 @@ namespace JsonParser
             os << *ptr;
         else if (const double *ptr = std::get_if<double>(&json))
             os << *ptr;
+        else if (const std::string *ptr = std::get_if<std::string>(&json))
+            os << *ptr;
+        else if (const bool *ptr = std::get_if<bool>(&json))
+            os << (*ptr ? "true" : "false");
+        else if (const void *ptr = std::get_if<void*>(&json))
+            os << "NULL";
         else if (const JsonMap *ptr = std::get_if<JsonMap>(&json))
         {
             os << '{';
