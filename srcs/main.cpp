@@ -15,6 +15,28 @@ int main(int argc, char **argv)
         JsonParser::JsonValue json = JsonParser::ParseFile(argv[1]);
         std::cout << json << std::endl;
 
+        std::string s1 = json["array"][0];
+        std::cout << s1 << std::endl;
+        
+        int a = json["two"]["three"];
+        std::cout << a << std::endl;
+        
+        std::string s = json["string"];
+        std::cout << s << std::endl;
+        
+        void* ptr = json["void"];
+        std::cout << ptr << std::endl;
+        
+        bool b = json["bool"];
+        std::cout << b << std::endl;
+        
+        double d = json["one"];
+        std::cout << d << std::endl;
+
+        std::vector<JsonParser::JsonValue> v = json["array"];
+        for (size_t i = 0; i < v.size(); i++)
+            std::cout << v[i] << std::endl;
+
         return (EXIT_SUCCESS);
     }
     catch (const std::exception &e)
