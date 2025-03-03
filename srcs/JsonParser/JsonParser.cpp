@@ -36,25 +36,36 @@ namespace JsonParser
 
     std::pair<std::string, JsonValue> RetrieveKeyValuePair(const std::string& text, stringIt& it)
     {
-        assert(it != text.end());
+        return (std::make_pair(RetrieveKey(text, it), RetrieveValue(text, it)));
+    }
 
+    std::string RetrieveKey(const std::string& text, stringIt& it)
+    {
         while (*it == ' ' || *it == '\n')
             it++;
 
         stringIt currentIt;
-        std::string key;
-        JsonValue value;
 
         if (*it == '\"')
         {
             currentIt = ++it;
             while (*it != '\"')
+            {
                 it++;
+            }
         }
-
-        key = text.substr(currentIt - text.begin(), it - currentIt);
-        assert(*(++it) == ':');
+        std::string key = text.substr(currentIt - text.begin(), it - currentIt);
         it++;
+        return (key);
+    }
+
+    JsonValue RetrieveValue(const std::string& text, stringIt& it)
+    {
+        stringIt currentIt;
+        JsonValue value;
+
+        if (*it == ':')
+            it++;
 
         while (*it == ' ' || *it == '\n')
             it++;
@@ -62,6 +73,11 @@ namespace JsonParser
         if (*it == '{')
         {
             value = ParseJson(text, it);
+        }
+        else if (*it == '[')
+        {
+            it++;
+            value = ParseArray(text, it);
         }
         else if (isdigit(*it))
         {
@@ -86,7 +102,24 @@ namespace JsonParser
         if (*it == ',')
             it++;
 
-        return (std::make_pair(key, value));
+        return (value);
+    }
+    
+    JsonValue ParseArray(const std::string &text, stringIt &it)
+    {
+        std::vector<JsonValue> values;
+
+        while (*it != ']')
+        {
+            const auto value = RetrieveValue(text, it);
+            values.push_back(value);
+
+            while (*it == ' ' || *it == '\n')
+                it++;
+        }
+        it++;
+
+        return (values);
     }
 
     JsonValue ParsePrimitive(const std::string &text, stringIt &start, stringIt &end)
@@ -137,6 +170,18 @@ namespace JsonParser
             os << (*ptr ? "true" : "false");
         else if (const void *ptr = std::get_if<void*>(&json))
             os << "NULL";
+        else if (const std::vector<JsonValue> *ptr = std::get_if<std::vector<JsonValue>>(&json))
+        {
+            os << "[ ";
+            for (size_t i = 0; i < ptr->size(); )
+            {
+                os << (*ptr)[i];
+                i++;
+                if (i < ptr->size())
+                    os << ", ";
+            }
+            os << " ]";
+        }
         else if (const JsonMap *ptr = std::get_if<JsonMap>(&json))
         {
             os << '{';
