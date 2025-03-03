@@ -37,6 +37,14 @@ int main(int argc, char **argv)
         for (size_t i = 0; i < v.size(); i++)
             std::cout << v[i] << std::endl;
 
+        std::cout << "---" << std::endl;
+        for (auto it: json["array"])
+            std::cout << it << std::endl;
+
+        std::cout << "---" << std::endl;
+        for (auto it: json["read"])
+            std::cout << it["salut"] << std::endl;
+
         return (EXIT_SUCCESS);
     }
     catch (const std::exception &e)

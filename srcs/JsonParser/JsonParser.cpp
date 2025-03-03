@@ -6,6 +6,26 @@
 
 namespace JsonParser
 {
+    JsonValue::Iterator JsonValue::begin()
+    {
+        if (JsonArray *ptr = std::get_if<JsonArray>(this))
+            return (Iterator(ptr->begin()));
+        else if (JsonMap *ptr = std::get_if<JsonMap>(this))
+            return (Iterator(ptr->begin()));
+        else
+            throw(0);
+    }
+
+    JsonValue::Iterator JsonValue::end()
+    {
+        if (JsonArray *ptr = std::get_if<JsonArray>(this))
+            return (Iterator(ptr->end()));
+        else if (JsonMap *ptr = std::get_if<JsonMap>(this))
+            return (Iterator(ptr->end()));
+        else
+            throw(0);
+    }
+
     JsonValue ParseFile(const std::string &path)
     {
         std::stringstream file = Utils::readFile(path);
@@ -107,7 +127,7 @@ namespace JsonParser
     
     JsonValue ParseArray(const std::string &text, stringIt &it)
     {
-        std::vector<JsonValue> values;
+        JsonArray values;
 
         while (*it != ']')
         {
@@ -170,7 +190,7 @@ namespace JsonParser
             os << (*ptr ? "true" : "false");
         else if (const void *ptr = std::get_if<void*>(&json))
             os << "NULL";
-        else if (const std::vector<JsonValue> *ptr = std::get_if<std::vector<JsonValue>>(&json))
+        else if (const JsonArray *ptr = std::get_if<JsonArray>(&json))
         {
             os << "[ ";
             for (size_t i = 0; i < ptr->size(); )
