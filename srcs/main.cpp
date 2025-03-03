@@ -13,7 +13,7 @@ int main(int argc, char **argv)
         //GlbParser::ParseFile(argv[1]);
 
         JsonParser::JsonValue json = JsonParser::ParseFile(argv[1]);
-        //std::cout << json << std::endl;
+        std::cout << json << std::endl;
         std::cout << json["one"] << std::endl;
         json["one"] = 2;
         std::cout << json["one"] << std::endl;

@@ -19,7 +19,7 @@ namespace JsonParser
         assert(*it == '{');
         it++;
 
-        std::map<std::string, JsonValue> json;
+        JsonMap json;
         while (*it != '}')
         {
             const auto [key, value] = RetriveKeyValuePair(text, it);
@@ -91,24 +91,28 @@ namespace JsonParser
     {
         static size_t level = 0;
         if (const int *ptr = std::get_if<int>(&json))
-            os << *ptr << ", ";
+            os << *ptr;
         else if (const double *ptr = std::get_if<double>(&json))
-            os << *ptr << ", ";
+            os << *ptr;
         else if (const JsonMap *ptr = std::get_if<JsonMap>(&json))
         {
-            os << "{" << std::endl;
-            for (size_t i = 0; i < level; i++)
-                os << "\t";
-
+            os << '{';
             level++;
-            for (auto it = ptr->begin(); it != ptr->end(); it++)
+            for (auto it = ptr->begin(); it != ptr->end(); )
             {
-                os << it->first << ": " << it->second << std::endl;
+                os << '\n';
+                for (size_t i = 0; i < level; i++)
+                    os << '\t';
+                os << it->first << ": " << it->second;
+                it++;
+                if (it != ptr->end())
+                 os << ',';
             }
-            level--;    
-            for (size_t i = 0; i < level - 1; i++)
-                os << "\t";
-            os << "}" << std::endl;
+            level--;
+            os << '\n';
+            for (size_t i = 0; i < level; i++)
+                    os << '\t';
+            os << '}';
         }
         return (os);
     }
