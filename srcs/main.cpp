@@ -10,7 +10,13 @@ int main(int argc, char **argv)
         if (argc != 2)
             throw(std::runtime_error("one argument needed"));
 
-        GlbParser::ParseFile(argv[1]);
+        //GlbParser::ParseFile(argv[1]);
+
+        JsonParser::JsonValue json = JsonParser::ParseFile(argv[1]);
+        //std::cout << json << std::endl;
+        std::cout << json["one"] << std::endl;
+        json["one"] = 2;
+        std::cout << json["one"] << std::endl;
         return (EXIT_SUCCESS);
     }
     catch (const std::exception &e)

@@ -13,6 +13,8 @@ namespace JsonParser
 
     struct JsonValue : std::variant<int, double, JsonMap> {
         using variant::variant;
+        JsonValue &operator[](const char *key) { return std::get<JsonMap>(*this)[key]; }
+        operator int() const { return std::get<int>(*this); }
     };
 
     JsonValue ParseFile(const std::string &path);
