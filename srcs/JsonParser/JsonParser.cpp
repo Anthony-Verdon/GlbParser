@@ -187,22 +187,30 @@ namespace JsonParser
         else if (const double *ptr = std::get_if<double>(&json))
             os << *ptr;
         else if (const std::string *ptr = std::get_if<std::string>(&json))
-            os << *ptr;
+            os << '"' << *ptr << '"';
         else if (const bool *ptr = std::get_if<bool>(&json))
             os << (*ptr ? "true" : "false");
         else if (const void *ptr = std::get_if<void*>(&json))
             os << "NULL";
         else if (const JsonArray *ptr = std::get_if<JsonArray>(&json))
         {
-            os << "[ ";
+            os << "[";
+            level++;
             for (size_t i = 0; i < ptr->size(); )
             {
+                os << '\n';
+                for (size_t i = 0; i < level; i++)
+                    os << '\t';
                 os << (*ptr)[i];
                 i++;
                 if (i < ptr->size())
                     os << ", ";
             }
-            os << " ]";
+            level--;
+            os << '\n';
+            for (size_t i = 0; i < level; i++)
+                    os << '\t';
+            os << "]";
         }
         else if (const JsonMap *ptr = std::get_if<JsonMap>(&json))
         {
@@ -213,7 +221,7 @@ namespace JsonParser
                 os << '\n';
                 for (size_t i = 0; i < level; i++)
                     os << '\t';
-                os << it->first << ": " << it->second;
+                os << '"' << it->first << '"' << ": " << it->second;
                 it++;
                 if (it != ptr->end())
                  os << ',';
