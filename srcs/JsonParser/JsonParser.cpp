@@ -99,20 +99,22 @@ namespace JsonParser
             it++;
             value = ParseArray(text, it);
         }
-        else if (isdigit(*it))
+        else if (*it == '-' || isdigit(*it))
         {
             currentIt = it;
+            if (*it == '-')
+                it++;
             while (isdigit(*it) || *it == '.')
                 it++;
             value = ParsePrimitive(text, currentIt, it);
         }
         else if (*it == '"')
         {
-            currentIt = it++;
+            currentIt = ++it;
             while (*it != '"')
                 it++;
-            it++;
             value = ParseString(text, currentIt, it);
+            it++;
         }
         else
         {

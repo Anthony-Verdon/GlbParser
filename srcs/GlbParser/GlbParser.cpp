@@ -1,11 +1,9 @@
 #include "GlbParser/GlbParser.hpp"
+#include "JsonParser/JsonParser.hpp"
 #include "Utils/Utils.hpp"
 #include <stdexcept>
 #include <iostream>
-#include <nlohmann/json.hpp>
 #include <fstream>
-
-using json = nlohmann::json;
 
 // Function to read a binary file
 std::vector<char> readBinaryFile(const std::string& filename) 
@@ -33,7 +31,8 @@ namespace GlbParser
         std::string jsonStr(data.begin() + 20, data.begin() + 20 + jsonLength);
 
         // Parse JSON
-        json gltfJson = json::parse(jsonStr);
+        stringIt it = jsonStr.begin();
+        JsonParser::JsonValue gltfJson = JsonParser::ParseJson(jsonStr, it);
         
         // Extract binary buffer
         size_t binOffset = 20 + jsonLength;
@@ -47,7 +46,7 @@ namespace GlbParser
 
         // Write JSON to .gltf file
         std::ofstream gltfFile("output.gltf");
-        gltfFile << gltfJson.dump(4); // Pretty-print JSON
+        gltfFile << gltfJson; // Pretty-print JSON
 
         std::cout << "Conversion complete!" << std::endl;
 

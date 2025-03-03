@@ -21,6 +21,7 @@ namespace JsonParser
         JsonValue &operator[](const char *key) { return std::get<JsonMap>(*this)[key]; }
         JsonValue &operator[](int index) { return std::get<JsonArray>(*this)[index]; }
         operator int() const { return std::get<int>(*this); }
+        operator size_t() const { return static_cast<size_t>(std::get<int>(*this)); }
         operator double() const { return std::get<double>(*this); }
         operator std::string() const { return std::get<std::string>(*this); }
         operator bool() const { return std::get<bool>(*this); }
