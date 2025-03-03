@@ -34,7 +34,7 @@ namespace GlbParser
 
         // Parse JSON
         json gltfJson = json::parse(jsonStr);
-
+        
         // Extract binary buffer
         size_t binOffset = 20 + jsonLength;
         if (binOffset < data.size()) {

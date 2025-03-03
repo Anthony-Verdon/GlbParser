@@ -1,4 +1,5 @@
 #include "GlbParser/GlbParser.hpp"
+#include "JsonParser/JsonParser.hpp"
 #include <stdexcept>
 #include <iostream>
 
