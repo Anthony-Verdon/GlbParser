@@ -4,13 +4,14 @@
 #include <string>
 #include <vector>
 
-class Utils
+namespace Utils
 {
-  public:
-    static bool isInt(const std::string &word);
-    static bool isFloat(const std::string &words);
-    static std::vector<std::string> splitLine(std::string line, const std::string &delimiter);
-    static float DegToRad(float angle);
-    static std::stringstream readFile(const std::string &path);
-    static bool checkExtension(const std::string &path, const std::string &extension);
-};
+  bool isInt(const std::string &word);
+  bool isFloat(const std::string &words);
+  std::vector<std::string> splitLine(std::string line, const std::string &delimiter);
+  float DegToRad(float angle);
+  std::stringstream readFile(const std::string &path);
+  std::vector<char> readBinaryFile(const std::string& path); 
+  bool checkExtension(const std::string &path, const std::string &extension);
+}
+  

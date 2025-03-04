@@ -5,13 +5,6 @@
 #include <iostream>
 #include <fstream>
 
-// Function to read a binary file
-std::vector<char> readBinaryFile(const std::string& filename) 
-{
-    std::ifstream file(filename, std::ios::binary);
-    return std::vector<char>(std::istreambuf_iterator<char>(file), {});
-}
-
 namespace GlbParser
 {
     void ParseFile(const std::string &path)
@@ -19,7 +12,7 @@ namespace GlbParser
         if (!Utils::checkExtension(path, ".glb"))
             throw(std::runtime_error("wrong extension, only parse .glb file"));
 
-        std::vector<char> data = readBinaryFile(path);
+        std::vector<char> data = Utils::readBinaryFile(path);
 
         if (data.size() < 12) {
             std::cerr << "Invalid GLB file!" << std::endl;
@@ -64,7 +57,7 @@ namespace GlbParser
                 size_t bufferIndex = bufferView["buffer"];
                 size_t byteOffset = bufferView["byteOffset"];
 
-                std::vector<char> bin = readBinaryFile(gltfJson["buffers"][bufferIndex]["uri"]);
+                std::vector<char> bin = Utils::readBinaryFile(gltfJson["buffers"][bufferIndex]["uri"]);
                 float* buffer = (float*)(bin.data() + byteOffset);
 
                 if (type == "VEC3")
