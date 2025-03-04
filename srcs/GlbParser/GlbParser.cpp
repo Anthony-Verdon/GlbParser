@@ -14,33 +14,23 @@ namespace GlbParser
 
         std::string data = Utils::readFile(path, std::ios::binary);
 
-        if (data.size() < 12) {
-            std::cerr << "Invalid GLB file!" << std::endl;
-            return;
-        }
+        if (data.size() < 12)            
+            throw(std::runtime_error("Invalid GLB file!"));
 
         // Read GLB Header
         uint32_t jsonLength = *reinterpret_cast<uint32_t*>(&data[12]);
         std::string jsonStr(data.begin() + 20, data.begin() + 20 + jsonLength);
-
+        
         // Parse JSON
         stringIt it = jsonStr.begin();
         JsonParser::JsonValue gltfJson = JsonParser::ParseJson(jsonStr, it);
         
         // Extract binary buffer
-        size_t binOffset = 20 + jsonLength;
-        if (binOffset < data.size()) {
-            std::ofstream binFile("output.bin", std::ios::binary);
-            binFile.write(&data[binOffset + 8], data.size() - binOffset - 8); // Skip 8-byte chunk header
-        }
-
-        // Update buffer reference in JSON
-        gltfJson["buffers"][0]["uri"] = "output.bin";
-
-        // Write JSON to .gltf file
-        std::ofstream gltfFile("output.gltf");
-        gltfFile << gltfJson; // Pretty-print JSON
-
+        uint32_t binOffset = 20 + jsonLength;
+        if (binOffset >= data.size())
+            throw(std::runtime_error("Invalid GLB file!"));
+        std::string binStr(data.begin() + binOffset + 8, data.end());
+        
         std::cout << "Conversion complete!" << std::endl;
 
         for (auto mesh: gltfJson["meshes"])
@@ -54,11 +44,9 @@ namespace GlbParser
                 std::string type = accessor["type"];
 
                 auto bufferView = gltfJson["bufferViews"][bufferViewIndex];
-                size_t bufferIndex = bufferView["buffer"];
                 size_t byteOffset = bufferView["byteOffset"];
 
-                std::string bin = Utils::readFile(gltfJson["buffers"][bufferIndex]["uri"], std::ios::binary);
-                float* buffer = (float*)(bin.data() + byteOffset);
+                float* buffer = (float*)(binStr.data() + byteOffset);
 
                 if (type == "VEC3")
                 {
