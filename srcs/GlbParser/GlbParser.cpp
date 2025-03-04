@@ -12,7 +12,7 @@ namespace GlbParser
         if (!Utils::checkExtension(path, ".glb"))
             throw(std::runtime_error("wrong extension, only parse .glb file"));
 
-        std::vector<char> data = Utils::readBinaryFile(path);
+        std::string data = Utils::readFile(path, std::ios::binary);
 
         if (data.size() < 12) {
             std::cerr << "Invalid GLB file!" << std::endl;
@@ -57,7 +57,7 @@ namespace GlbParser
                 size_t bufferIndex = bufferView["buffer"];
                 size_t byteOffset = bufferView["byteOffset"];
 
-                std::vector<char> bin = Utils::readBinaryFile(gltfJson["buffers"][bufferIndex]["uri"]);
+                std::string bin = Utils::readFile(gltfJson["buffers"][bufferIndex]["uri"], std::ios::binary);
                 float* buffer = (float*)(bin.data() + byteOffset);
 
                 if (type == "VEC3")

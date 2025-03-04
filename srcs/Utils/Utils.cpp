@@ -27,22 +27,16 @@ namespace Utils
         return (roundf(angle * (M_PI / 180) * 100000) / 100000);
     }
 
-    std::stringstream readFile(const std::string &path)
+  std::string readFile(const std::string &path, std::ios_base::openmode mode)
     {
         std::ifstream file;
         std::stringstream stream;
 
         file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-        file.open(path);
+        file.open(path, mode);
         stream << file.rdbuf();
         file.close();
-        return (stream);
-    }
-
-    std::vector<char> readBinaryFile(const std::string& filename) 
-    {
-        std::ifstream file(filename, std::ios::binary);
-        return std::vector<char>(std::istreambuf_iterator<char>(file), {});
+        return (stream.str());
     }
 
     bool checkExtension(const std::string &path, const std::string &extension)

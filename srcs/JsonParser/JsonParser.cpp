@@ -11,8 +11,7 @@ namespace JsonParser
         if (!Utils::checkExtension(path, ".json"))
             std::cerr << path << " has wrong extension" << std::endl;
 
-        std::stringstream file = Utils::readFile(path);
-        std::string text = file.str();
+        std::string text = Utils::readFile(path);
 
         stringIt start = text.begin();
         return (ParseJson(text, start));
