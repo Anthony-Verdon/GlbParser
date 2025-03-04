@@ -82,12 +82,10 @@ namespace JsonParser
             it++;
             value = ParseArray(text, it);
         }
-        else if (*it == '-' || isdigit(*it))
+        else if (*it == '-' || isdigit(*it) || *it == 'e' || *it == 'E')
         {
             currentIt = it;
-            if (*it == '-')
-                it++;
-            while (it != text.end() && (isdigit(*it) || *it == '.'))
+            while (it != text.end() && (*it == '-' || isdigit(*it) || *it == '.' || *it == 'e' || *it == 'E'))
                 it++;
             value = ParsePrimitive(text, currentIt, it);
         }
