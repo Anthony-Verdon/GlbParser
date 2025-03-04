@@ -1,5 +1,3 @@
 build
 .xmake
 exe
-output*
-test.json
