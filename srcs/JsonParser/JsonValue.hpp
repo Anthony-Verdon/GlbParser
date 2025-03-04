@@ -42,6 +42,9 @@ namespace JsonParser
             friend bool operator== (const Iterator& a, const Iterator& b) { return a.it == b.it; };
             friend bool operator!= (const Iterator& a, const Iterator& b) { return a.it != b.it; };
             
+            std::string key() const;
+            JsonValue value() const;
+
             private:
                 VariantIt it;
         };

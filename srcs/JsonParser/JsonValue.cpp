@@ -38,6 +38,22 @@ namespace JsonParser
         return tmp; 
     }
 
+    std::string JsonValue::Iterator::key() const
+    {
+        if (const MapIt *ptr = std::get_if<MapIt>(&it))
+            return ((*ptr)->first);
+        else
+            throw(std::runtime_error("JsonValue::Iterator::key(), invalid value"));
+    }
+
+    JsonValue JsonValue::Iterator::value() const
+    {
+        if (const MapIt *ptr = std::get_if<MapIt>(&it))
+            return ((*ptr)->second);
+        else
+            throw(std::runtime_error("JsonValue::value(), invalid value"));
+    }
+
     JsonValue::Iterator JsonValue::begin()
     {
         if (JsonArray *ptr = std::get_if<JsonArray>(this))
@@ -45,7 +61,7 @@ namespace JsonParser
         else if (JsonMap *ptr = std::get_if<JsonMap>(this))
             return (Iterator(ptr->begin()));
         else
-        throw(std::runtime_error("JsonValue::begin(), invalid value"));
+            throw(std::runtime_error("JsonValue::begin(), invalid value"));
     }
 
     JsonValue::Iterator JsonValue::end()
