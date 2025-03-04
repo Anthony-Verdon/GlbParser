@@ -6,26 +6,6 @@
 
 namespace JsonParser
 {
-    JsonValue::Iterator JsonValue::begin()
-    {
-        if (JsonArray *ptr = std::get_if<JsonArray>(this))
-            return (Iterator(ptr->begin()));
-        else if (JsonMap *ptr = std::get_if<JsonMap>(this))
-            return (Iterator(ptr->begin()));
-        else
-            throw(0);
-    }
-
-    JsonValue::Iterator JsonValue::end()
-    {
-        if (JsonArray *ptr = std::get_if<JsonArray>(this))
-            return (Iterator(ptr->end()));
-        else if (JsonMap *ptr = std::get_if<JsonMap>(this))
-            return (Iterator(ptr->end()));
-        else
-            throw(0);
-    }
-
     JsonValue ParseFile(const std::string &path)
     {
         std::stringstream file = Utils::readFile(path);
