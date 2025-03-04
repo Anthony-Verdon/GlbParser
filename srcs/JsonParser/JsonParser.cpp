@@ -160,7 +160,7 @@ namespace JsonParser
 
     void SkipWhitespace(stringIt &it)
     {
-        static const std::string whitespace = "\t\n\v\f\r";
+        static const std::string whitespace = "\t\n\v\f\r ";
         while (whitespace.find(*it) != std::string::npos)
             it++;
     }
