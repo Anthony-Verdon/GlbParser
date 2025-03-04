@@ -7,7 +7,7 @@
 
 namespace GlbParser
 {
-    void ParseFile(const std::string &path, bool generateFiles)
+    std::pair<JsonParser::JsonValue, std::string> ParseFile(const std::string &path, bool generateFiles)
     {
         if (!Utils::checkExtension(path, ".glb"))
             throw(std::runtime_error("wrong extension, only parse .glb file"));
@@ -42,39 +42,7 @@ namespace GlbParser
             std::ofstream gltfFile(filename + ".gltf");
             gltfFile << gltfJson;
         }
-        std::cout << "Conversion complete!" << std::endl;
 
-        for (auto mesh: gltfJson["meshes"])
-        {
-            std::cout << mesh["name"] << std::endl;
-            for (size_t attribute: mesh["primitives"][0]["attributes"])
-            {
-                auto accessor = gltfJson["accessors"][attribute];
-                size_t bufferViewIndex = accessor["bufferView"];
-                size_t count = accessor["count"];
-                std::string type = accessor["type"];
-
-                auto bufferView = gltfJson["bufferViews"][bufferViewIndex];
-                size_t byteOffset = bufferView["byteOffset"];
-
-                float* buffer = (float*)(binStr.data() + byteOffset);
-
-                if (type == "VEC3")
-                {
-                    for (size_t i = 0; i < count; ++i)
-                        std::cout << "(" << buffer[i * 3] << ", " << buffer[i * 3  + 1] << ", " << buffer[i * 3 + 2] << ")" << std::endl;
-                }
-                else if (type == "VEC2")
-                {
-                    for (size_t i = 0; i < count; ++i)
-                        std::cout << "(" << buffer[i * 2] << ", " << buffer[i * 2 + 1] << ")" << std::endl;
-                }
-                else
-                {
-                    std::cout << "type unknown:" << type << std::endl;
-                }
-                std::cout << std::endl;
-            }
-        }
+        return (std::make_pair(gltfJson, binStr));
     }
 }
