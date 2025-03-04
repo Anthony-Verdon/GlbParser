@@ -8,6 +8,9 @@ namespace JsonParser
 {
     JsonValue ParseFile(const std::string &path)
     {
+        if (!Utils::checkExtension(path, ".json"))
+            std::cerr << path << " has wrong extension" << std::endl;
+
         std::stringstream file = Utils::readFile(path);
         std::string text = file.str();
 
@@ -26,8 +29,7 @@ namespace JsonParser
             const auto [key, value] = RetrieveKeyValuePair(text, it);
             json[key] = value;
 
-            while (*it == ' ' || *it == '\n')
-                it++;
+            SkipWhitespace(it);
         }
         it++;
 
@@ -41,8 +43,7 @@ namespace JsonParser
 
     std::string RetrieveKey(const std::string& text, stringIt& it)
     {
-        while (*it == ' ' || *it == '\n')
-            it++;
+        SkipWhitespace(it);
 
         stringIt currentIt;
 
@@ -67,8 +68,7 @@ namespace JsonParser
         if (*it == ':')
             it++;
 
-        while (*it == ' ' || *it == '\n')
-            it++;
+        SkipWhitespace(it);
 
         if (*it == '{')
         {
@@ -116,8 +116,7 @@ namespace JsonParser
             const auto value = RetrieveValue(text, it);
             values.push_back(value);
 
-            while (*it == ' ' || *it == '\n')
-                it++;
+            SkipWhitespace(it);
         }
         it++;
 
@@ -159,6 +158,13 @@ namespace JsonParser
         }
     }
 
+    void SkipWhitespace(stringIt &it)
+    {
+        static const std::string whitespace = "\t\n\v\f\r";
+        while (whitespace.find(*it) != std::string::npos)
+            it++;
+    }
+    
     std::ostream &operator<<(std::ostream &os, const JsonValue &json)
     {
         static size_t level = 0;
