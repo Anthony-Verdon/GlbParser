@@ -48,5 +48,8 @@ namespace JsonParser
 
         Iterator begin();
         Iterator end();
+
     };
+    
+    std::ostream &operator<<(std::ostream &os, const JsonValue &json);
 }

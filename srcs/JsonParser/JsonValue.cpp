@@ -1,5 +1,6 @@
 #include "JsonParser/JsonValue.hpp"
 #include <stdexcept>
+#include <iostream>
 
 namespace JsonParser
 {
@@ -55,5 +56,61 @@ namespace JsonParser
             return (Iterator(ptr->end()));
         else
         throw(std::runtime_error("JsonValue::end(), invalid value"));
+    }
+
+    std::ostream &operator<<(std::ostream &os, const JsonValue &json)
+    {
+        static size_t level = 0;
+        if (const int *ptr = std::get_if<int>(&json))
+            os << *ptr;
+        else if (const double *ptr = std::get_if<double>(&json))
+            os << *ptr;
+        else if (const std::string *ptr = std::get_if<std::string>(&json))
+            os << '"' << *ptr << '"';
+        else if (const bool *ptr = std::get_if<bool>(&json))
+            os << (*ptr ? "true" : "false");
+        else if (const void *ptr = std::get_if<void*>(&json))
+            os << "NULL";
+        else if (const JsonArray *ptr = std::get_if<JsonArray>(&json))
+        {
+            os << "[";
+            level++;
+            for (size_t i = 0; i < ptr->size(); )
+            {
+                os << '\n';
+                for (size_t i = 0; i < level; i++)
+                    os << '\t';
+                os << (*ptr)[i];
+                i++;
+                if (i < ptr->size())
+                    os << ", ";
+            }
+            level--;
+            os << '\n';
+            for (size_t i = 0; i < level; i++)
+                    os << '\t';
+            os << "]";
+        }
+        else if (const JsonMap *ptr = std::get_if<JsonMap>(&json))
+        {
+            os << '{';
+            level++;
+            for (auto it = ptr->begin(); it != ptr->end(); )
+            {
+                os << '\n';
+                for (size_t i = 0; i < level; i++)
+                    os << '\t';
+                os << '"' << it->first << '"' << ": " << it->second;
+                it++;
+                if (it != ptr->end())
+                 os << ',';
+            }
+            level--;
+            os << '\n';
+            for (size_t i = 0; i < level; i++)
+                    os << '\t';
+            os << '}';
+        }
+        return (os);
     }
 }
