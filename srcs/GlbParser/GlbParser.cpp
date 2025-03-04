@@ -7,7 +7,7 @@
 
 namespace GlbParser
 {
-    void ParseFile(const std::string &path)
+    void ParseFile(const std::string &path, bool generateFiles)
     {
         if (!Utils::checkExtension(path, ".glb"))
             throw(std::runtime_error("wrong extension, only parse .glb file"));
@@ -31,6 +31,17 @@ namespace GlbParser
             throw(std::runtime_error("Invalid GLB file!"));
         std::string binStr(data.begin() + binOffset + 8, data.end());
         
+        // Generate Files
+        if (generateFiles)
+        {
+            std::string filename = path.substr(0, path.find_last_of("."));
+            std::ofstream binFile(filename + ".bin", std::ios::binary);
+            binFile << binStr;
+
+            gltfJson["buffers"][0]["bin"] = filename.substr(filename.find_last_of("/") + 1, filename.size()) + ".bin";
+            std::ofstream gltfFile(filename + ".gltf");
+            gltfFile << gltfJson;
+        }
         std::cout << "Conversion complete!" << std::endl;
 
         for (auto mesh: gltfJson["meshes"])

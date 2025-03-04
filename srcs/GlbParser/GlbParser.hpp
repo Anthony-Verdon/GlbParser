@@ -4,5 +4,5 @@
 
 namespace GlbParser
 {
-    void ParseFile(const std::string &path);
+    void ParseFile(const std::string &path, bool generateFiles = false);
 }
