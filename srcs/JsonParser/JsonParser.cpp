@@ -20,6 +20,7 @@ namespace JsonParser
 
     JsonValue ParseJson(const std::string &text, stringIt &it)
     {
+        assert(it != text.end());
         assert(*it == '{');
         it++;
 
@@ -29,7 +30,7 @@ namespace JsonParser
             const auto [key, value] = RetrieveKeyValuePair(text, it);
             json[key] = value;
 
-            SkipWhitespace(it);
+            SkipWhitespace(text, it);
         }
         it++;
 
@@ -43,18 +44,20 @@ namespace JsonParser
 
     std::string RetrieveKey(const std::string& text, stringIt& it)
     {
-        SkipWhitespace(it);
+        SkipWhitespace(text, it);
+        assert(it != text.end());
 
         stringIt currentIt;
 
         if (*it == '\"')
         {
             currentIt = ++it;
-            while (*it != '\"')
-            {
+            while (it != text.end() && *it != '\"')
                 it++;
-            }
         }
+
+        assert(it != text.end());
+        assert(*it == '\"');
         std::string key = text.substr(currentIt - text.begin(), it - currentIt);
         it++;
         return (key);
@@ -62,14 +65,15 @@ namespace JsonParser
 
     JsonValue RetrieveValue(const std::string& text, stringIt& it)
     {
-        stringIt currentIt;
-        JsonValue value;
-
+        SkipWhitespace(text, it);
+        assert(it != text.end());
         if (*it == ':')
             it++;
-
-        SkipWhitespace(it);
-
+        SkipWhitespace(text, it);
+        assert(it != text.end());
+        
+        stringIt currentIt;
+        JsonValue value;
         if (*it == '{')
         {
             value = ParseJson(text, it);
@@ -84,14 +88,14 @@ namespace JsonParser
             currentIt = it;
             if (*it == '-')
                 it++;
-            while (isdigit(*it) || *it == '.')
+            while (it != text.end() && (isdigit(*it) || *it == '.'))
                 it++;
             value = ParsePrimitive(text, currentIt, it);
         }
         else if (*it == '"')
         {
             currentIt = ++it;
-            while (*it != '"')
+            while (it != text.end() && *it != '"')
                 it++;
             value = ParseString(text, currentIt, it);
             it++;
@@ -101,6 +105,7 @@ namespace JsonParser
             value = ParseKeyword(text, it);
         }
 
+        assert(it != text.end());
         if (*it == ',')
             it++;
 
@@ -111,13 +116,14 @@ namespace JsonParser
     {
         JsonArray values;
 
-        while (*it != ']')
+        while (it != text.end() && *it != ']')
         {
             const auto value = RetrieveValue(text, it);
             values.push_back(value);
 
-            SkipWhitespace(it);
+            SkipWhitespace(text, it);
         }
+        assert(it != text.end());
         it++;
 
         return (values);
@@ -125,6 +131,7 @@ namespace JsonParser
 
     JsonValue ParsePrimitive(const std::string &text, stringIt &start, stringIt &end)
     {
+        assert(start != text.end() && end != text.end());
         std::string substr = text.substr(start - text.begin(), end - start);
         int pointIndex = substr.find(".");
 
@@ -136,13 +143,19 @@ namespace JsonParser
 
     JsonValue ParseString(const std::string &text, stringIt &start, stringIt &end)
     {
+        assert(start != text.end() && end != text.end());
         return (text.substr(start - text.begin(), end - start));
     }
 
     JsonValue ParseKeyword(const std::string &text, stringIt &it)
     {
+        assert(it != text.end());
         stringIt currentIt = it;
-        it = it + 4;
+        for (int i = 0; i < 4; i++)
+        {
+            it++;
+            assert(it != text.end());
+        }
 
         if (text.substr(currentIt - text.begin(), it - currentIt) == "true")
             return (true);
@@ -151,6 +164,7 @@ namespace JsonParser
         else
         {
             it++;
+            assert(it != text.end());
             if (text.substr(currentIt - text.begin(), it - currentIt) == "false")
                 return (false);
             else
@@ -158,13 +172,14 @@ namespace JsonParser
         }
     }
 
-    void SkipWhitespace(stringIt &it)
+    void SkipWhitespace(const std::string &text, stringIt &it)
     {
         static const std::string whitespace = "\t\n\v\f\r ";
-        while (whitespace.find(*it) != std::string::npos)
+        while (it != text.end() && whitespace.find(*it) != std::string::npos)
             it++;
+        assert(it != text.end());
     }
-    
+
     std::ostream &operator<<(std::ostream &os, const JsonValue &json)
     {
         static size_t level = 0;

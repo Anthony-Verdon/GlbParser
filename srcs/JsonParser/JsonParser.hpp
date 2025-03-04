@@ -18,7 +18,7 @@ namespace JsonParser
     JsonValue ParseString(const std::string &text, stringIt &start, stringIt &end);
     JsonValue ParseKeyword(const std::string &text, stringIt &it);
 
-    void SkipWhitespace(stringIt &it);
-    
+    void SkipWhitespace(const std::string &text, stringIt &it);
+
     std::ostream &operator<<(std::ostream &os, const JsonValue &json);
 }
