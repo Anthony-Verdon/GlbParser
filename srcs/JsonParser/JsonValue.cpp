@@ -1,4 +1,5 @@
 #include "JsonParser/JsonValue.hpp"
+#include <stdexcept>
 
 namespace JsonParser
 {
@@ -8,7 +9,7 @@ namespace JsonParser
             return (*(*ptr));
         if (const MapIt *ptr = std::get_if<MapIt>(&it))
             return (*(*ptr)).second;
-        throw(0);
+        throw(std::runtime_error("JsonValue::Iterator::operator*, invalid value"));
     }
 
     JsonValue *JsonValue::Iterator::operator->()
@@ -43,7 +44,7 @@ namespace JsonParser
         else if (JsonMap *ptr = std::get_if<JsonMap>(this))
             return (Iterator(ptr->begin()));
         else
-            throw(0);
+        throw(std::runtime_error("JsonValue::begin(), invalid value"));
     }
 
     JsonValue::Iterator JsonValue::end()
@@ -53,6 +54,6 @@ namespace JsonParser
         else if (JsonMap *ptr = std::get_if<JsonMap>(this))
             return (Iterator(ptr->end()));
         else
-            throw(0);
+        throw(std::runtime_error("JsonValue::end(), invalid value"));
     }
 }
