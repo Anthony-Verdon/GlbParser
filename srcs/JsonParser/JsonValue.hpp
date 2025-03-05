@@ -53,6 +53,8 @@ namespace JsonParser
         Iterator begin();
         Iterator end();
 
+        bool KeyExist(const std::string &key) const;
+
     };
     
     std::ostream &operator<<(std::ostream &os, const JsonValue &json);

@@ -83,6 +83,14 @@ namespace JsonParser
         throw(std::runtime_error("JsonValue::end(), invalid value"));
     }
 
+    bool JsonValue::KeyExist(const std::string &key) const
+    {
+        if (const JsonMap *ptr = std::get_if<JsonMap>(this))
+            return (ptr->find(key) != ptr->end());
+
+        return (false);
+    }
+
     std::ostream &operator<<(std::ostream &os, const JsonValue &json)
     {
         static size_t level = 0;
