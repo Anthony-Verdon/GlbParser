@@ -4,6 +4,15 @@
 
 namespace JsonParser
 {
+    JsonValue::operator float() const
+    {
+        if (const int *ptr = std::get_if<int>(this)) 
+            return static_cast<float>(*ptr);
+        if (const double *ptr = std::get_if<double>(this))
+            return static_cast<float>(*ptr);
+        return (0);
+    }
+
     const JsonValue &JsonValue::Iterator::operator*() 
     {
         if (const ArrayIt *ptr = std::get_if<ArrayIt>(&it)) 

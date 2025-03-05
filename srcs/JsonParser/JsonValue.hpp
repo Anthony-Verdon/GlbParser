@@ -19,6 +19,7 @@ namespace JsonParser
         operator int() const { return std::get<int>(*this); }
         operator size_t() const { return static_cast<size_t>(std::get<int>(*this)); }
         operator double() const { return std::get<double>(*this); }
+        operator float() const;
         operator std::string() const { return std::get<std::string>(*this); }
         operator bool() const { return std::get<bool>(*this); }
         operator void*() const { return NULL; }
