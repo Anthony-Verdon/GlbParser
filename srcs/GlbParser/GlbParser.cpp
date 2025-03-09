@@ -65,11 +65,17 @@ namespace Glb
         for (auto skinJson: gltfJson["skins"])
             data.skins.push_back(LoadSkin(skinJson, gltfJson, binStr));
 
-        for (auto materialJson: gltfJson["materials"])
-            data.materials.push_back(LoadMaterial(materialJson));
+        if (gltfJson.KeyExist("materials"))
+        {
+            for (auto materialJson: gltfJson["materials"])
+                data.materials.push_back(LoadMaterial(materialJson));
+        }
 
-        for (auto imageJson: gltfJson["images"])
-            data.images.push_back(LoadImage(imageJson, gltfJson, binStr));
+        if (gltfJson.KeyExist("materials"))
+        {
+            for (auto imageJson: gltfJson["images"])
+                data.images.push_back(LoadImage(imageJson, gltfJson, binStr));
+        }
 
         return (data);
     }
