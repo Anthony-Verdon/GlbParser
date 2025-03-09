@@ -347,7 +347,7 @@ namespace Glb
 
         material.name = std::string(materialJson["name"]);
         if (materialJson["pbrMetallicRoughness"].KeyExist("baseColorTexture"))
-            material.image = materialJson["pbrMetallicRoughness"]["baseColorTexture"];
+            material.image = materialJson["pbrMetallicRoughness"]["baseColorTexture"]["index"];
         else
             material.image = -1;
 
