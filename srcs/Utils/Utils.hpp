@@ -8,7 +8,7 @@
 
 namespace Utils
 {
-    static std::string readFile(const std::string &path, std::ios_base::openmode mode = std::ios_base::in )
+    std::string readFile(const std::string &path, std::ios_base::openmode mode = std::ios_base::in )
     {
         std::ifstream file;
         std::stringstream stream;
@@ -20,7 +20,7 @@ namespace Utils
         return (stream.str());
     }
 
-    static bool checkExtension(const std::string &path, const std::string &extension)
+    bool checkExtension(const std::string &path, const std::string &extension)
     {
         std::string filename = path.substr(path.find_last_of("/") + 1, path.length());
         if (extension.size() >= filename.size())
@@ -33,7 +33,7 @@ namespace Utils
         return (true);
     }
 
-    static float DegToRad(float angle)
+    float DegToRad(float angle)
     {
         return (roundf(angle * (M_PI / 180) * 100000) / 100000);
     }

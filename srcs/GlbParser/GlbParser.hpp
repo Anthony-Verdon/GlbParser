@@ -16,6 +16,12 @@ namespace Glb
         int skin;
     };
 
+    constexpr int nbFloatPerPosition = 3;
+    constexpr int nbFloatPerTexCoord = 2;
+    constexpr int nbFloatPerNormal = 3;
+    constexpr int nbFloatPerJoint = 4;
+    constexpr int nbFloatPerWeight = 4;
+
     struct Vertex
     {
         float x,y,z;
@@ -58,7 +64,7 @@ namespace Glb
         std::vector<int> nodes;
     };
 
-    struct Gltf
+    struct GltfData
     {
         int rootScene;
         std::vector<Scene> scenes;
@@ -70,14 +76,14 @@ namespace Glb
     };
 
     std::pair<JsonParser::JsonValue, std::string> LoadBinaryFile(const std::string &path, bool generateFiles = false);
-    Gltf LoadGltf(const JsonParser::JsonValue &gltfJson, const std::string &binStr);
-    Scene LoadScene(const JsonParser::JsonValue &sceneJson);
-    Node LoadNode(const JsonParser::JsonValue &nodeJson);
-    AlgOps::mat4 CalculateTransform(const JsonParser::JsonValue &nodeJson);
-    Mesh LoadMesh(const JsonParser::JsonValue &meshJson, const JsonParser::JsonValue &gltfJson, const std::string &binStr);
+    GltfData LoadGltf(JsonParser::JsonValue &gltfJson, const std::string &binStr);
+    Scene LoadScene(JsonParser::JsonValue &sceneJson);
+    Node LoadNode(JsonParser::JsonValue &nodeJson);
+    AlgOps::mat4 CalculateTransform(JsonParser::JsonValue &nodeJson);
+    Mesh LoadMesh(JsonParser::JsonValue &meshJson, JsonParser::JsonValue &gltfJson, const std::string &binStr);
     void LoadVertices(Mesh &mesh, JsonParser::JsonValue &gltfJson, const std::string &binStr, JsonParser::JsonValue &attributes);
     void LoadIndices(Mesh &mesh, JsonParser::JsonValue &gltfJson, const std::string &binStr, int indiceIndex);
-    Skin LoadSkin(const JsonParser::JsonValue &skinJson, const JsonParser::JsonValue &gltfJson, const std::string &binStr);
-    Material LoadMaterial(const JsonParser::JsonValue &materialJson, const JsonParser::JsonValue &gltfJson, const std::string &binStr);
-    Image LoadImage(const JsonParser::JsonValue &imageJson, const JsonParser::JsonValue &gltfJson, const std::string &binStr);
+    Skin LoadSkin(JsonParser::JsonValue &skinJson, JsonParser::JsonValue &gltfJson, const std::string &binStr);
+    Material LoadMaterial(JsonParser::JsonValue &materialJson);
+    Image LoadImage(JsonParser::JsonValue &imageJson, JsonParser::JsonValue &gltfJson, const std::string &binStr);
 }

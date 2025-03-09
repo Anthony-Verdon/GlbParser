@@ -47,47 +47,49 @@ namespace Glb
         return (std::make_pair(gltfJson, binStr));
     }
 
-    Gltf LoadGltf(const JsonParser::JsonValue &gltfJson, const std::string &binStr)
+    GltfData LoadGltf(JsonParser::JsonValue &gltfJson, const std::string &binStr)
     {
-        Gltf data;
+        GltfData data;
 
-        data.rootScene = (int)gltfJson["scene"];
+        data.rootScene = gltfJson["scene"];
 
-        for (sceneJson: gltfJson["scenes"])
+        for (auto sceneJson: gltfJson["scenes"])
             data.scenes.push_back(LoadScene(sceneJson));
 
-        for (nodeJson: gltfJson["nodes"])
+        for (auto nodeJson: gltfJson["nodes"])
             data.nodes.push_back(LoadNode(nodeJson));
 
-        for (meshJson: gltfJson["meshes"])
+        for (auto meshJson: gltfJson["meshes"])
             data.meshes.push_back(LoadMesh(meshJson, gltfJson, binStr));
 
-        for (skinJson: gltfJson["skins"])
+        for (auto skinJson: gltfJson["skins"])
             data.skins.push_back(LoadSkin(skinJson, gltfJson, binStr));
 
-        for (materialJson: gltfJson["materials"])
-            data.materials.push_back(LoadMaterial(materialJson, gltfJson, binStr));
+        for (auto materialJson: gltfJson["materials"])
+            data.materials.push_back(LoadMaterial(materialJson));
 
-        for (imageJson: gltfJson["images"])
+        for (auto imageJson: gltfJson["images"])
             data.images.push_back(LoadImage(imageJson, gltfJson, binStr));
+
+        return (data);
     }
 
-    Scene LoadScene(const JsonParser::JsonValue &sceneJson)
+    Scene LoadScene(JsonParser::JsonValue &sceneJson)
     {
         Scene scene;
 
-        scene.name = sceneJson["name"];
+        scene.name = std::string(sceneJson["name"]);
         for (size_t nodeIndex: sceneJson["nodes"])
             scene.nodes.push_back(nodeIndex);
 
         return (scene);
     }
     
-    Node LoadNode(const JsonParser::JsonValue &nodeJson)
+    Node LoadNode(JsonParser::JsonValue &nodeJson)
     {
         Node node;
         
-        node.name = nodeJson["name"];
+        node.name = std::string(nodeJson["name"]);
         node.transform = CalculateTransform(nodeJson);
 
         if (nodeJson.KeyExist("children"))
@@ -105,7 +107,7 @@ namespace Glb
         return (node);
     }
 
-    AlgOps::mat4 CalculateTransform(const JsonParser::JsonValue &nodeJson)
+    AlgOps::mat4 CalculateTransform(JsonParser::JsonValue &nodeJson)
     {
         AlgOps::vec3 scale;
         scale.uniform(1);
@@ -120,7 +122,7 @@ namespace Glb
         AlgOps::vec4 quat;
         quat.uniform(0);
         if (nodeJson.KeyExist("rotation"))
-            quat = {nodeJson["rotation"][0], node["rotation"][1], nodeJson["rotation"][2], nodeJson["rotation"][3]};
+            quat = {nodeJson["rotation"][0], nodeJson["rotation"][1], nodeJson["rotation"][2], nodeJson["rotation"][3]};
 
         float roll = atan2(2 * (quat.getW() * quat.getX() + quat.getY() * quat.getZ()), 1 - 2 * (pow(quat.getX(), 2) + pow(quat.getX(), 2)));
         float pitch = asin(2 * (quat.getW() * quat.getY() - quat.getZ() * quat.getX()));
@@ -139,20 +141,20 @@ namespace Glb
 
         AlgOps::mat4 transform;
         transform.identity();
-        transform = AlgOps::translate(model, translate)
+        transform = AlgOps::translate(transform, translate)
                 * rotate
-                * AlgOps::scale(model, scale);  
+                * AlgOps::scale(transform, scale);  
         
         return (transform);
     }
 
-    Mesh LoadMesh(const JsonParser::JsonValue &meshJson, const JsonParser::JsonValue &gltfJson, const std::string &binStr)
+    Mesh LoadMesh(JsonParser::JsonValue &meshJson, JsonParser::JsonValue &gltfJson, const std::string &binStr)
     {
         Mesh mesh;
 
-        mesh.name = meshJson["name"];
+        mesh.name = std::string(meshJson["name"]);
 
-        auto primitives = mesh["primitives"][0];
+        auto primitives = meshJson["primitives"][0];
 
         LoadVertices(mesh, gltfJson, binStr, primitives["attributes"]);
         LoadIndices(mesh, gltfJson, binStr, primitives["indices"]);
@@ -217,13 +219,13 @@ namespace Glb
             else if (it.key() == "JOINTS_0")
             {
                 joints.reserve(size);
-                if (componentType == GL_UNSIGNED_BYTE)
+                if (componentType == 5121) // GL_UNSIGNED_BYTE
                 {
                     uint8_t *data = (uint8_t*)buffer;
                     for (size_t i = 0; i < size; i++)
                         joints.push_back((uint16_t)data[i]);
                 }
-                else if (componentType == GL_UNSIGNED_SHORT)
+                else if (componentType == 5123) // GL_UNSIGNED_SHORT
                 {
                     uint16_t *data = (uint16_t*)buffer;
                     for (size_t i = 0; i < size; i++)
@@ -240,7 +242,7 @@ namespace Glb
         }
         
         size_t count = positions.size() / 3;
-        std::vector<VertexStruct> vertices(count);
+        std::vector<Vertex> vertices(count);
         for (size_t i = 0; i < count; i++)
         {
             vertices[i].x = positions[i * nbFloatPerPosition + 0];
@@ -292,7 +294,7 @@ namespace Glb
         mesh.indices = indices;
     }
 
-    Skin LoadSkin(const JsonParser::JsonValue &skinJson, const JsonParser::JsonValue &gltfJson, const std::string &binStr)
+    Skin LoadSkin(JsonParser::JsonValue &skinJson, JsonParser::JsonValue &gltfJson, const std::string &binStr)
     {
         Skin skin;
 
@@ -320,18 +322,18 @@ namespace Glb
         size_t i = 0;
         for (auto joint: skinJson["joints"])
         {
-            skin[joint] =  matrices[i];
+            skin.joints[joint] =  matrices[i];
             i++;
         }
 
         return (skin);
     }
 
-    Material LoadMaterial(const JsonParser::JsonValue &materialJson, const JsonParser::JsonValue &gltfJson, const std::string &binStr)
+    Material LoadMaterial(JsonParser::JsonValue &materialJson)
     {
         Material material;
 
-        material.name = materialJson["name"];
+        material.name = std::string(materialJson["name"]);
         if (materialJson["pbrMetallicRoughness"].KeyExist("baseColorTexture"))
             material.texture = materialJson["pbrMetallicRoughness"]["baseColorTexture"];
         else
@@ -340,11 +342,11 @@ namespace Glb
         return (material);
     }
 
-    Image LoadImage(const JsonParser::JsonValue &imageJson, const JsonParser::JsonValue &gltfJson, const std::string &binStr)
+    Image LoadImage(JsonParser::JsonValue &imageJson, JsonParser::JsonValue &gltfJson, const std::string &binStr)
     {
         Image image;
 
-        image.name = imageJson["name"];
+        image.name = std::string(imageJson["name"]);
         size_t bufferViewIndex = imageJson["bufferView"];
         auto bufferView = gltfJson["bufferViews"][bufferViewIndex];
         size_t byteOffset = bufferView["byteOffset"];
