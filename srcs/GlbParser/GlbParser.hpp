@@ -42,7 +42,7 @@ namespace Glb
     struct Material
     {
         std::string name;
-        int texture;
+        int image;
     };
 
     struct Image

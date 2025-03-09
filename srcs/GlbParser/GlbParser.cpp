@@ -170,6 +170,8 @@ namespace Glb
         LoadIndices(mesh, gltfJson, binStr, primitives["indices"]);
         if (primitives.KeyExist("material"))
             mesh.material = primitives["material"];
+        else
+            mesh.material = -1;
 
         return (mesh);
     }
@@ -345,9 +347,9 @@ namespace Glb
 
         material.name = std::string(materialJson["name"]);
         if (materialJson["pbrMetallicRoughness"].KeyExist("baseColorTexture"))
-            material.texture = materialJson["pbrMetallicRoughness"]["baseColorTexture"];
+            material.image = materialJson["pbrMetallicRoughness"]["baseColorTexture"];
         else
-            material.texture = -1;
+            material.image = -1;
 
         return (material);
     }
