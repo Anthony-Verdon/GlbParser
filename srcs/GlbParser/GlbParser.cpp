@@ -106,9 +106,13 @@ namespace Glb
     
         if (nodeJson.KeyExist("mesh"))
             node.mesh = nodeJson["mesh"];
+        else
+            node.mesh = -1;
 
         if (nodeJson.KeyExist("skin"))
             node.skin = nodeJson["skin"];
+        else
+            node.skin = -1;
 
         return (node);
     }
