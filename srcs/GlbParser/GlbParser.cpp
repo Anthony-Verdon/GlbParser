@@ -71,7 +71,7 @@ namespace Glb
                 data.materials.push_back(LoadMaterial(materialJson));
         }
 
-        if (gltfJson.KeyExist("materials"))
+        if (gltfJson.KeyExist("images"))
         {
             for (auto imageJson: gltfJson["images"])
                 data.images.push_back(LoadImage(imageJson, gltfJson, binStr));
