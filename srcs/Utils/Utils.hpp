@@ -4,6 +4,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <cmath>
 
 namespace Utils
 {
@@ -30,6 +31,11 @@ namespace Utils
                 return (false);
         }
         return (true);
+    }
+
+    static float DegToRad(float angle)
+    {
+        return (roundf(angle * (M_PI / 180) * 100000) / 100000);
     }
 }
   
