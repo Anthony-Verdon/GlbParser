@@ -9,7 +9,12 @@ add_cxxflags("-Werror")
 add_cxxflags("-Wextra")
 add_cxxflags("-O3")
 
+includes("Toolbox")
+includes("Matrix")
+
 target("GlbParser")
     set_kind("static")
     add_files("srcs/**.cpp")
+    add_deps("Toolbox")
+    add_deps("Matrix")
     add_includedirs("srcs", {public = true})

@@ -1,5 +1,5 @@
 #include "JsonParser/JsonParser.hpp"
-#include "Utils/Utils.hpp"
+#include "Toolbox.hpp"
 #include <cassert>
 #include <cctype> 
 #include <iostream>
@@ -8,10 +8,10 @@ namespace JsonParser
 {
     JsonValue ParseFile(const std::string &path)
     {
-        if (!Utils::checkExtension(path, ".json"))
+        if (!Toolbox::checkExtension(path, ".json"))
             std::cerr << path << " has wrong extension" << std::endl;
 
-        std::string text = Utils::readFile(path);
+        std::string text = Toolbox::readFile(path);
 
         stringIt start = text.begin();
         return (ParseJson(text, start));

@@ -3,7 +3,7 @@
 #include <string>
 #include <map>
 #include "JsonParser/JsonValue.hpp"
-#include "Matrix/Matrix.hpp"
+#include "Matrix.hpp"
 
 namespace Glb
 {

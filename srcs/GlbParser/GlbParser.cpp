@@ -1,7 +1,7 @@
 #include "GlbParser/GlbParser.hpp"
 #include "JsonParser/JsonParser.hpp"
 #include "JsonParser/JsonValue.hpp"
-#include "Utils/Utils.hpp"
+#include "Toolbox.hpp"
 #include <stdexcept>
 #include <iostream>
 #include <fstream>
@@ -10,10 +10,10 @@ namespace Glb
 {
     std::pair<JsonParser::JsonValue, std::string> LoadBinaryFile(const std::string &path, bool generateFiles)
     {
-        if (!Utils::checkExtension(path, ".glb"))
+        if (!Toolbox::checkExtension(path, ".glb"))
             throw(std::runtime_error("wrong extension, only parse .glb file"));
 
-        std::string data = Utils::readFile(path, std::ios::binary);
+        std::string data = Toolbox::readFile(path, std::ios::binary);
 
         if (data.size() < 12)            
             throw(std::runtime_error("Invalid GLB file!"));
