@@ -334,7 +334,7 @@ namespace Glb
         size_t i = 0;
         for (auto joint: skinJson["joints"])
         {
-            skin.joints[joint] =  matrices[i];
+            skin.joints.push_back({joint, matrices[i]});
             i++;
         }
 

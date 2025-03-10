@@ -52,10 +52,16 @@ namespace Glb
         size_t bufferLength;
     };
 
+    struct Joint
+    {
+        int nodeIndex;
+        AlgOps::mat4 inverseBindMatrix;
+    };
+
     struct Skin
     {
         std::string name;
-        std::map<int, AlgOps::mat4> joints;
+        std::vector<Joint> joints;
     };
 
     struct Scene
