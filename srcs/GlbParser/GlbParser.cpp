@@ -65,8 +65,11 @@ namespace Glb
         for (auto meshJson: gltfJson["meshes"])
             data.meshes.push_back(LoadMesh(meshJson, gltfJson, binStr));
 
-        for (auto skinJson: gltfJson["skins"])
-            data.skins.push_back(LoadSkin(skinJson, gltfJson, binStr));
+        if (gltfJson.KeyExist("skins"))
+        {
+            for (auto skinJson: gltfJson["skins"])
+                data.skins.push_back(LoadSkin(skinJson, gltfJson, binStr));
+        }
 
         if (gltfJson.KeyExist("materials"))
         {
