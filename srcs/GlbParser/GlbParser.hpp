@@ -3,14 +3,14 @@
 #include <string>
 #include <map>
 #include "JsonParser/JsonValue.hpp"
-#include "Matrix.hpp"
+#include <glm/glm.hpp>
 
 namespace Glb
 {
     struct Node
     {
         std::string name;
-        AlgOps::mat4 transform;
+        glm::mat4 transform;
         std::vector<int> children;
         int mesh;
         int skin;
@@ -55,7 +55,7 @@ namespace Glb
     struct Joint
     {
         int nodeIndex;
-        AlgOps::mat4 inverseBindMatrix;
+        glm::mat4 inverseBindMatrix;
     };
 
     struct Skin
@@ -85,7 +85,7 @@ namespace Glb
     GltfData LoadGltf(JsonParser::JsonValue &gltfJson, const std::string &binStr);
     Scene LoadScene(JsonParser::JsonValue &sceneJson);
     Node LoadNode(JsonParser::JsonValue &nodeJson);
-    AlgOps::mat4 CalculateTransform(JsonParser::JsonValue &nodeJson);
+    glm::mat4 CalculateTransform(JsonParser::JsonValue &nodeJson);
     Mesh LoadMesh(JsonParser::JsonValue &meshJson, JsonParser::JsonValue &gltfJson, const std::string &binStr);
     void LoadVertices(Mesh &mesh, JsonParser::JsonValue &gltfJson, const std::string &binStr, JsonParser::JsonValue &attributes);
     void LoadIndices(Mesh &mesh, JsonParser::JsonValue &gltfJson, const std::string &binStr, int indiceIndex);

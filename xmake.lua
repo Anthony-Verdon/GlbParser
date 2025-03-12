@@ -11,10 +11,12 @@ add_cxxflags("-O3")
 
 includes("Toolbox")
 includes("Matrix")
+add_requires("glm")
 
 target("GlbParser")
     set_kind("static")
     add_files("srcs/**.cpp")
     add_deps("Toolbox")
     add_deps("Matrix")
+    add_packages("glm")
     add_includedirs("srcs", {public = true})

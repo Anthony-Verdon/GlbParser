@@ -5,7 +5,10 @@
 #include <stdexcept>
 #include <iostream>
 #include <fstream>
-
+#include <glm/gtc/matrix_transform.hpp>
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/string_cast.hpp>
+#include <glm/gtx/quaternion.hpp>
 namespace Glb
 {
     std::pair<JsonParser::JsonValue, std::string> LoadBinaryFile(const std::string &path, bool generateFiles)
@@ -117,43 +120,24 @@ namespace Glb
         return (node);
     }
 
-    AlgOps::mat4 CalculateTransform(JsonParser::JsonValue &nodeJson)
+    glm::mat4 CalculateTransform(JsonParser::JsonValue &nodeJson)
     {
-        AlgOps::vec3 scale;
-        scale.uniform(1);
+        glm::vec3 scale({1, 1, 1});
         if (nodeJson.KeyExist("scale"))
             scale = {nodeJson["scale"][0], nodeJson["scale"][1], nodeJson["scale"][2]};
 
-        AlgOps::vec3 translate;
-        translate.uniform(0);
+        glm::vec3 translate(0);
         if (nodeJson.KeyExist("translation"))
             translate = {nodeJson["translation"][0], nodeJson["translation"][1], nodeJson["translation"][2]};
 
-        AlgOps::vec4 quat;
-        quat.uniform(0);
+        glm::quat quat({0, 0, 0, 0});
         if (nodeJson.KeyExist("rotation"))
-            quat = {nodeJson["rotation"][0], nodeJson["rotation"][1], nodeJson["rotation"][2], nodeJson["rotation"][3]};
+            quat = {nodeJson["rotation"][3], nodeJson["rotation"][0], nodeJson["rotation"][1], nodeJson["rotation"][2]};
 
-        float roll = atan2(2 * (quat.getW() * quat.getX() + quat.getY() * quat.getZ()), 1 - 2 * (pow(quat.getX(), 2) + pow(quat.getX(), 2)));
-        float pitch = asin(2 * (quat.getW() * quat.getY() - quat.getZ() * quat.getX()));
-        float yaw = atan2(2 * (quat.getW() * quat.getZ() + quat.getX() * quat.getY()), 1 - 2 * (pow(quat.getY(), 2) + pow(quat.getZ(), 2)));
-
-        AlgOps::vec3 axis[3];
-        axis[0] = {1, 0, 0};
-        axis[1] = {0, 1, 0};
-        axis[2] = {0, 0, 1};
-        
-        AlgOps::mat4 rotate;
-        rotate.uniform(1);
-        rotate = AlgOps::rotate(rotate, roll, axis[0]) *
-                AlgOps::rotate(rotate, pitch, axis[1]) *
-                AlgOps::rotate(rotate, yaw, axis[2]);
-
-        AlgOps::mat4 transform;
-        transform.identity();
-        transform = AlgOps::translate(transform, translate)
-                * rotate
-                * AlgOps::scale(transform, scale);  
+        glm::mat4 transform(1);
+        transform = glm::translate(transform, translate)
+                * glm::toMat4(quat)
+                * glm::scale(transform, scale);  
         
         return (transform);
     }
@@ -321,14 +305,14 @@ namespace Glb
         float* buffer = (float*)(binStr.data() + byteOffset);
         
         size_t nbFloat = 16;
-        std::vector<AlgOps::mat4> matrices;
+        std::vector<glm::mat4> matrices;
         matrices.reserve(count);
         for (size_t i = 0; i < count; i++)
         {
-            std::vector<float> data;
+            glm::mat4 matrix;
             for (size_t j = 0; j < nbFloat; j++)
-                data.push_back(buffer[i * nbFloat + j]);
-            matrices.push_back({data});
+                matrix[j / 4][j % 4] = buffer[i * nbFloat + j];
+            matrices.push_back(matrix);
         }
 
         size_t i = 0;
