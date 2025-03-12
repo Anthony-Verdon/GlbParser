@@ -80,6 +80,12 @@ namespace Glb
                 data.images.push_back(LoadImage(imageJson, gltfJson, binStr));
         }
 
+        if (gltfJson.KeyExist("animations"))
+        {
+            for (auto animationJson: gltfJson["animations"])
+                data.animations.push_back(LoadAnimation(animationJson, gltfJson, binStr));
+        }
+
         return (data);
     }
 
@@ -351,5 +357,67 @@ namespace Glb
         image.bufferLength = bufferView["byteLength"];
 
         return (image);
+    }
+
+    Animation LoadAnimation(JsonParser::JsonValue &animationJson, JsonParser::JsonValue &gltfJson, const std::string &binStr)
+    {
+        Animation animation;
+        animation.name = std::string(animationJson["name"]);
+        for (auto channelJson: animationJson["channels"])
+        {
+            Channel channel;
+            channel.sampler = channelJson["sampler"];
+            channel.node = channelJson["target"]["node"];
+            channel.type = std::string(channelJson["target"]["path"]);
+            
+            auto samplerJson = animationJson["samplers"][channel.sampler];
+            Sampler sampler;
+            sampler.interpolation = std::string(samplerJson["interpolation"]);
+
+            // input = timecodes
+            {
+                size_t input = samplerJson["input"];
+                auto accessor = gltfJson["accessors"][input];
+                size_t bufferViewIndex = accessor["bufferView"];
+                size_t count = accessor["count"];
+
+                auto bufferView = gltfJson["bufferViews"][bufferViewIndex];
+                size_t byteOffset = bufferView["byteOffset"];
+                float* buffer = (float*)(binStr.data() + byteOffset);
+
+                for (size_t i = 0; i < count; i++)
+                    sampler.timecodes.push_back(buffer[i]);
+            }
+
+            // output = data
+            {
+                size_t output = samplerJson["output"];
+                auto accessor = gltfJson["accessors"][output];
+                size_t bufferViewIndex = accessor["bufferView"];
+                size_t count = accessor["count"];
+                std::string type = accessor["type"];
+
+                sampler.nbElement = 0;
+                if (type == "SCALAR")
+                    sampler.nbElement = 1;
+                else if (type == "VEC2")
+                    sampler.nbElement = 2;
+                else if (type == "VEC3")
+                    sampler.nbElement = 3;
+                else if (type == "VEC4")
+                    sampler.nbElement = 4;
+
+                auto bufferView = gltfJson["bufferViews"][bufferViewIndex];
+                size_t byteOffset = bufferView["byteOffset"];
+                float* buffer = (float*)(binStr.data() + byteOffset);
+
+                for (size_t i = 0; i < count * sampler.nbElement; i++)
+                    sampler.data.push_back(buffer[i]);
+            }
+            animation.channels.push_back(channel);
+            animation.samplers.push_back(sampler);
+        }
+
+        return (animation);
     }
 }

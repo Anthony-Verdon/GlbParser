@@ -7,6 +7,28 @@
 
 namespace Glb
 {
+    struct Channel
+    {
+        int sampler;
+        int node;
+        std::string type;
+    };
+
+    struct Sampler
+    {
+        std::vector<float> timecodes;
+        std::vector<float> data;
+        size_t nbElement;
+        std::string interpolation;
+    };
+
+    struct Animation
+    {
+        std::string name;
+        std::vector<Channel> channels;
+        std::vector<Sampler> samplers;
+    };
+
     struct Node
     {
         std::string name;
@@ -79,6 +101,7 @@ namespace Glb
         std::vector<Skin> skins;
         std::vector<Material> materials;
         std::vector<Image> images;
+        std::vector<Animation> animations;
     };
 
     std::pair<JsonParser::JsonValue, std::string> LoadBinaryFile(const std::string &path, bool generateFiles = false);
@@ -92,4 +115,5 @@ namespace Glb
     Skin LoadSkin(JsonParser::JsonValue &skinJson, JsonParser::JsonValue &gltfJson, const std::string &binStr);
     Material LoadMaterial(JsonParser::JsonValue &materialJson);
     Image LoadImage(JsonParser::JsonValue &imageJson, JsonParser::JsonValue &gltfJson, const std::string &binStr);
+    Animation LoadAnimation(JsonParser::JsonValue &animationJson, JsonParser::JsonValue &gltfJson, const std::string &binStr);
 }
