@@ -325,10 +325,10 @@ namespace Glb
         matrices.reserve(count);
         for (size_t i = 0; i < count; i++)
         {
-            AlgOps::mat4 matrix;
+            std::vector<float> data;
             for (size_t j = 0; j < nbFloat; j++)
-                matrix.setData(j % 4, j / 4, buffer[i * nbFloat + j]);
-            matrices.push_back(matrix);
+                data.push_back(buffer[i * nbFloat + j]);
+            matrices.push_back({data});
         }
 
         size_t i = 0;
