@@ -61,10 +61,49 @@ namespace Glb
         int material;
     };
 
+    // https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#reference-material-pbrmetallicroughness
+    struct PbrMetallicRoughness
+    {
+        glm::vec4 baseColorFactor;
+        int baseColorTexture;
+        float metallicFactor;
+        float roughnessFactor;
+        int metalliCRoughnessTexture;
+
+        PbrMetallicRoughness()
+        {
+            baseColorFactor = glm::vec4(1, 1, 1, 1);
+            baseColorTexture = -1;
+            metallicFactor = 1;
+            roughnessFactor = 1;
+            metalliCRoughnessTexture = -1;
+        }
+    };
+
+    // https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#reference-material
     struct Material
     {
         std::string name;
-        int image;
+        PbrMetallicRoughness pbr;
+        int normalTexture;
+        int occlusionTexture;
+        int emissiveTexture;
+        glm::vec3 emissiveFactor;
+        std::string alphaMode;
+        float alphaCutoff;
+        bool doubleSided;
+
+        Material()
+        {
+            name = "";
+            normalTexture = -1;
+            occlusionTexture = -1;
+            emissiveTexture = -1;
+            emissiveFactor = glm::vec3(0, 0, 0);
+            alphaMode = "OPAQUE";
+            alphaCutoff = 0.5f;
+            doubleSided = false;
+        }
     };
 
     struct Image

@@ -339,10 +339,15 @@ namespace Glb
         Material material;
 
         material.name = std::string(materialJson["name"]);
-        if (materialJson["pbrMetallicRoughness"].KeyExist("baseColorTexture"))
-            material.image = materialJson["pbrMetallicRoughness"]["baseColorTexture"]["index"];
-        else
-            material.image = -1;
+        auto pbr = materialJson["pbrMetallicRoughness"];
+        if (pbr.KeyExist("baseColorTexture"))
+            material.pbr.baseColorTexture = pbr["baseColorTexture"]["index"];
+        if (pbr.KeyExist("metallicFactor"))
+            material.pbr.metallicFactor = pbr["metallicFactor"];
+        if (pbr.KeyExist("roughnessFactor"))
+            material.pbr.roughnessFactor = pbr["roughnessFactor"];
+        if (materialJson.KeyExist("emissiveFactor"))
+            material.emissiveFactor = glm::vec3(materialJson["emissiveFactor"][0], materialJson["emissiveFactor"][1], materialJson["emissiveFactor"][2]);
 
         return (material);
     }
