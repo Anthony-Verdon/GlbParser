@@ -338,18 +338,44 @@ namespace Glb
     {
         Material material;
 
-        material.name = std::string(materialJson["name"]);
-        auto pbr = materialJson["pbrMetallicRoughness"];
-        if (pbr.KeyExist("baseColorTexture"))
-            material.pbr.baseColorTexture = pbr["baseColorTexture"]["index"];
-        if (pbr.KeyExist("metallicFactor"))
-            material.pbr.metallicFactor = pbr["metallicFactor"];
-        if (pbr.KeyExist("roughnessFactor"))
-            material.pbr.roughnessFactor = pbr["roughnessFactor"];
+        if (materialJson.KeyExist("name"))
+            material.name = std::string(materialJson["name"]);
+        if (materialJson.KeyExist("pbrMetallicRoughness"))
+            material.pbr = LoadPBR(materialJson["pbrMetallicRoughness"]);
+        if (materialJson.KeyExist("normalTexture"))
+            material.normalTexture = materialJson["normalTexture"]["index"];
+        if (materialJson.KeyExist("occlusionTexture"))
+            material.occlusionTexture = materialJson["occlusionTexture"]["index"];
+        if (materialJson.KeyExist("emissiveTexture"))
+            material.emissiveTexture = materialJson["emissiveTexture"]["index"];
         if (materialJson.KeyExist("emissiveFactor"))
             material.emissiveFactor = glm::vec3(materialJson["emissiveFactor"][0], materialJson["emissiveFactor"][1], materialJson["emissiveFactor"][2]);
+        if (materialJson.KeyExist("alphaMode"))
+            material.alphaMode = std::string(materialJson["alphaMode"]);
+        if (materialJson.KeyExist("alphaCutoff"))
+            material.alphaCutoff = materialJson["alphaCutoff"];
+        if (materialJson.KeyExist("doubleSided"))
+            material.doubleSided = materialJson["doubleSided"];
 
         return (material);
+    }
+
+    PbrMetallicRoughness LoadPBR(JsonParser::JsonValue &pbrJson)
+    {
+        PbrMetallicRoughness pbr;
+
+        if (pbrJson.KeyExist("baseColorFactor"))
+            pbr.baseColorFactor = glm::vec4(pbrJson["baseColorFactor"][0], pbrJson["baseColorFactor"][1], pbrJson["baseColorFactor"][2], pbrJson["baseColorFactor"][3]);
+        if (pbrJson.KeyExist("baseColorTexture"))
+            pbr.baseColorTexture = pbrJson["baseColorTexture"]["index"];
+        if (pbrJson.KeyExist("metallicFactor"))
+            pbr.metallicFactor = pbrJson["metallicFactor"];
+        if (pbrJson.KeyExist("roughnessFactor"))
+            pbr.roughnessFactor = pbrJson["roughnessFactor"];
+        if (pbrJson.KeyExist("metallicRoughnessTexture"))
+            pbr.metallicRoughnessTexture = pbrJson["metallicRoughnessTexture"]["index"];
+
+        return (pbr);
     }
 
     Image LoadImage(JsonParser::JsonValue &imageJson, JsonParser::JsonValue &gltfJson, const std::string &binStr)

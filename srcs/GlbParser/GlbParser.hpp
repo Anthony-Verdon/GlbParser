@@ -68,7 +68,7 @@ namespace Glb
         int baseColorTexture;
         float metallicFactor;
         float roughnessFactor;
-        int metalliCRoughnessTexture;
+        int metallicRoughnessTexture;
 
         PbrMetallicRoughness()
         {
@@ -76,7 +76,7 @@ namespace Glb
             baseColorTexture = -1;
             metallicFactor = 1;
             roughnessFactor = 1;
-            metalliCRoughnessTexture = -1;
+            metallicRoughnessTexture = -1;
         }
     };
 
@@ -153,6 +153,7 @@ namespace Glb
     void LoadIndices(Mesh &mesh, JsonParser::JsonValue &gltfJson, const std::string &binStr, int indiceIndex);
     Skin LoadSkin(JsonParser::JsonValue &skinJson, JsonParser::JsonValue &gltfJson, const std::string &binStr);
     Material LoadMaterial(JsonParser::JsonValue &materialJson);
+    PbrMetallicRoughness LoadPBR(JsonParser::JsonValue &pbrJson);
     Image LoadImage(JsonParser::JsonValue &imageJson, JsonParser::JsonValue &gltfJson, const std::string &binStr);
     Animation LoadAnimation(JsonParser::JsonValue &animationJson, JsonParser::JsonValue &gltfJson, const std::string &binStr);
 }
