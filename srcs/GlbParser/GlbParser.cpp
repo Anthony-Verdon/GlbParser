@@ -5,10 +5,7 @@
 #include <stdexcept>
 #include <iostream>
 #include <fstream>
-#include <glm/gtc/matrix_transform.hpp>
-#define GLM_ENABLE_EXPERIMENTAL
-#include <glm/gtx/string_cast.hpp>
-#include <glm/gtx/quaternion.hpp>
+#include "geometry/geometry.hpp"
 namespace Glb
 {
     std::pair<JsonParser::JsonValue, std::string> LoadBinaryFile(const std::string &path, bool generateFiles)
@@ -129,24 +126,23 @@ namespace Glb
         return (node);
     }
 
-    glm::mat4 CalculateTransform(JsonParser::JsonValue &nodeJson)
+    ml::mat4 CalculateTransform(JsonParser::JsonValue &nodeJson)
     {
-        glm::vec3 scale({1, 1, 1});
+        ml::vec3 scale(1, 1, 1);
         if (nodeJson.KeyExist("scale"))
             scale = {nodeJson["scale"][0], nodeJson["scale"][1], nodeJson["scale"][2]};
 
-        glm::vec3 translate(0);
+        ml::vec3 translate(0, 0, 0);
         if (nodeJson.KeyExist("translation"))
             translate = {nodeJson["translation"][0], nodeJson["translation"][1], nodeJson["translation"][2]};
 
-        glm::quat quat({0, 0, 0, 0});
+        ml::vec4 quat(0, 0, 0, 0);
         if (nodeJson.KeyExist("rotation"))
             quat = {nodeJson["rotation"][3], nodeJson["rotation"][0], nodeJson["rotation"][1], nodeJson["rotation"][2]};
 
-        glm::mat4 transform(1);
-        transform = glm::translate(transform, translate)
-                * glm::toMat4(quat)
-                * glm::scale(transform, scale);  
+        ml::mat4 transform = ml::translate(translate)
+                * ml::rotate(quat)
+                * ml::scale(scale);  
         
         return (transform);
     }
@@ -314,11 +310,11 @@ namespace Glb
         float* buffer = (float*)(binStr.data() + byteOffset);
         
         size_t nbFloat = 16;
-        std::vector<glm::mat4> matrices;
+        std::vector<ml::mat4> matrices;
         matrices.reserve(count);
         for (size_t i = 0; i < count; i++)
         {
-            glm::mat4 matrix;
+            ml::mat4 matrix;
             for (size_t j = 0; j < nbFloat; j++)
                 matrix[j / 4][j % 4] = buffer[i * nbFloat + j];
             matrices.push_back(matrix);
@@ -349,7 +345,7 @@ namespace Glb
         if (materialJson.KeyExist("emissiveTexture"))
             material.emissiveTexture = materialJson["emissiveTexture"]["index"];
         if (materialJson.KeyExist("emissiveFactor"))
-            material.emissiveFactor = glm::vec3(materialJson["emissiveFactor"][0], materialJson["emissiveFactor"][1], materialJson["emissiveFactor"][2]);
+            material.emissiveFactor = ml::vec3(materialJson["emissiveFactor"][0], materialJson["emissiveFactor"][1], materialJson["emissiveFactor"][2]);
         if (materialJson.KeyExist("alphaMode"))
             material.alphaMode = std::string(materialJson["alphaMode"]);
         if (materialJson.KeyExist("alphaCutoff"))
@@ -365,7 +361,7 @@ namespace Glb
         PbrMetallicRoughness pbr;
 
         if (pbrJson.KeyExist("baseColorFactor"))
-            pbr.baseColorFactor = glm::vec4(pbrJson["baseColorFactor"][0], pbrJson["baseColorFactor"][1], pbrJson["baseColorFactor"][2], pbrJson["baseColorFactor"][3]);
+            pbr.baseColorFactor = ml::vec4(pbrJson["baseColorFactor"][0], pbrJson["baseColorFactor"][1], pbrJson["baseColorFactor"][2], pbrJson["baseColorFactor"][3]);
         if (pbrJson.KeyExist("baseColorTexture"))
             pbr.baseColorTexture = pbrJson["baseColorTexture"]["index"];
         if (pbrJson.KeyExist("metallicFactor"))

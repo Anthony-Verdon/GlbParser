@@ -3,7 +3,8 @@
 #include <string>
 #include <map>
 #include "JsonParser/JsonValue.hpp"
-#include <glm/glm.hpp>
+#include "vec/vec.hpp"
+#include "mat/mat.hpp"
 
 namespace Glb
 {
@@ -32,7 +33,7 @@ namespace Glb
     struct Node
     {
         std::string name;
-        glm::mat4 transform;
+        ml::mat4 transform;
         std::vector<int> children;
         int mesh;
         int skin;
@@ -64,7 +65,7 @@ namespace Glb
     // https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#reference-material-pbrmetallicroughness
     struct PbrMetallicRoughness
     {
-        glm::vec4 baseColorFactor;
+        ml::vec4 baseColorFactor;
         int baseColorTexture;
         float metallicFactor;
         float roughnessFactor;
@@ -72,7 +73,7 @@ namespace Glb
 
         PbrMetallicRoughness()
         {
-            baseColorFactor = glm::vec4(1, 1, 1, 1);
+            baseColorFactor = ml::vec4(1, 1, 1, 1);
             baseColorTexture = -1;
             metallicFactor = 1;
             roughnessFactor = 1;
@@ -88,7 +89,7 @@ namespace Glb
         int normalTexture;
         int occlusionTexture;
         int emissiveTexture;
-        glm::vec3 emissiveFactor;
+        ml::vec3 emissiveFactor;
         std::string alphaMode;
         float alphaCutoff;
         bool doubleSided;
@@ -99,7 +100,7 @@ namespace Glb
             normalTexture = -1;
             occlusionTexture = -1;
             emissiveTexture = -1;
-            emissiveFactor = glm::vec3(0, 0, 0);
+            emissiveFactor = ml::vec3(0, 0, 0);
             alphaMode = "OPAQUE";
             alphaCutoff = 0.5f;
             doubleSided = false;
@@ -116,7 +117,7 @@ namespace Glb
     struct Joint
     {
         int nodeIndex;
-        glm::mat4 inverseBindMatrix;
+        ml::mat4 inverseBindMatrix;
     };
 
     struct Skin
@@ -147,7 +148,7 @@ namespace Glb
     GltfData LoadGltf(JsonParser::JsonValue &gltfJson, const std::string &binStr);
     Scene LoadScene(JsonParser::JsonValue &sceneJson);
     Node LoadNode(JsonParser::JsonValue &nodeJson);
-    glm::mat4 CalculateTransform(JsonParser::JsonValue &nodeJson);
+    ml::mat4 CalculateTransform(JsonParser::JsonValue &nodeJson);
     Mesh LoadMesh(JsonParser::JsonValue &meshJson, JsonParser::JsonValue &gltfJson, const std::string &binStr);
     void LoadVertices(Mesh &mesh, JsonParser::JsonValue &gltfJson, const std::string &binStr, JsonParser::JsonValue &attributes);
     void LoadIndices(Mesh &mesh, JsonParser::JsonValue &gltfJson, const std::string &binStr, int indiceIndex);
