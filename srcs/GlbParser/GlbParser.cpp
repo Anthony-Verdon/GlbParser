@@ -138,12 +138,12 @@ namespace Glb
 
         ml::vec4 quat(0, 0, 0, 0);
         if (nodeJson.KeyExist("rotation"))
-            quat = {nodeJson["rotation"][3], nodeJson["rotation"][0], nodeJson["rotation"][1], nodeJson["rotation"][2]};
+            quat = {nodeJson["rotation"][0], nodeJson["rotation"][1], nodeJson["rotation"][2], nodeJson["rotation"][3]};
 
         ml::mat4 transform = ml::translate(translate)
                 * ml::rotate(quat)
                 * ml::scale(scale);  
-        
+
         return (transform);
     }
 
@@ -316,7 +316,7 @@ namespace Glb
         {
             ml::mat4 matrix;
             for (size_t j = 0; j < nbFloat; j++)
-                matrix[j / 4][j % 4] = buffer[i * nbFloat + j];
+                matrix[j % 4][j / 4] = buffer[i * nbFloat + j];
             matrices.push_back(matrix);
         }
 
