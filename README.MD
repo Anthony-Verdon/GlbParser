@@ -14,6 +14,6 @@ this project will probably be updated in the future. Here is a list of things I 
 - handle more elements in `.glb` data and link the documentation to it
 - add tests with doctest to check if everything work
 - ...
-- 
+
 
 the goal of this project is not to be the best glb parser, but one working fine and easy to understand (maybe I should add commentarys for that, and a better doc)
