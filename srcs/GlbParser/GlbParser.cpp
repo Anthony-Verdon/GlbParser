@@ -152,20 +152,27 @@ namespace Glb
         Mesh mesh;
 
         mesh.name = std::string(meshJson["name"]);
-
-        auto primitives = meshJson["primitives"][0];
-
-        LoadVertices(mesh, gltfJson, binStr, primitives["attributes"]);
-        LoadIndices(mesh, gltfJson, binStr, primitives["indices"]);
-        if (primitives.KeyExist("material"))
-            mesh.material = primitives["material"];
-        else
-            mesh.material = -1;
+        for (auto primitiveJson: meshJson["primitives"])
+            mesh.primitives.push_back(LoadPrimitive(primitiveJson, gltfJson, binStr));
 
         return (mesh);
     }
 
-    void LoadVertices(Mesh &mesh, JsonParser::JsonValue &gltfJson, const std::string &binStr, JsonParser::JsonValue &attributes)
+    Primitive LoadPrimitive(JsonParser::JsonValue &primitiveJson, JsonParser::JsonValue &gltfJson, const std::string &binStr)
+    {
+        Primitive primitive;
+
+        LoadVertices(primitive, gltfJson, binStr, primitiveJson["attributes"]);
+        LoadIndices(primitive, gltfJson, binStr, primitiveJson["indices"]);
+        if (primitiveJson.KeyExist("material"))
+            primitive.material = primitiveJson["material"];
+        else
+            primitive.material = -1;
+
+        return (primitive);
+    }
+
+    void LoadVertices(Primitive &primitive, JsonParser::JsonValue &gltfJson, const std::string &binStr, JsonParser::JsonValue &attributes)
     {
         std::vector<float> positions;
         std::vector<float> textureCoords;
@@ -276,10 +283,10 @@ namespace Glb
             }
 
         }
-        mesh.vertices = vertices;
+        primitive.vertices = vertices;
     }
 
-    void LoadIndices(Mesh &mesh, JsonParser::JsonValue &gltfJson, const std::string &binStr, int indiceIndex)
+    void LoadIndices(Primitive &primitive, JsonParser::JsonValue &gltfJson, const std::string &binStr, int indiceIndex)
     {
         auto accessor = gltfJson["accessors"][indiceIndex];
         size_t bufferViewIndex = accessor["bufferView"];
@@ -292,7 +299,7 @@ namespace Glb
         for (size_t i = 0; i < count; i++)
             indices.push_back(buffer[i]);
         
-        mesh.indices = indices;
+        primitive.indices = indices;
     }
 
     Skin LoadSkin(JsonParser::JsonValue &skinJson, JsonParser::JsonValue &gltfJson, const std::string &binStr)

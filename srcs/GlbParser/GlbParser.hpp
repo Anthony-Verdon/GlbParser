@@ -54,12 +54,22 @@ namespace Glb
         float w1, w2, w3, w4;
     };
 
+    // https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#reference-mesh-primitive
+    struct Primitive
+    {
+        std::vector<Vertex> vertices; // attributes
+        std::vector<uint16_t> indices;
+        int material;
+        // int mode;
+        // object targets
+    };
+
+    // https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#reference-mesh
     struct Mesh
     {
         std::string name;
-        std::vector<Vertex> vertices;
-        std::vector<uint16_t> indices;
-        int material;
+        std::vector<Primitive> primitives;
+        // std::vector<float> weights;
     };
 
     // https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#reference-material-pbrmetallicroughness
@@ -150,8 +160,9 @@ namespace Glb
     Node LoadNode(JsonParser::JsonValue &nodeJson);
     ml::mat4 CalculateTransform(JsonParser::JsonValue &nodeJson);
     Mesh LoadMesh(JsonParser::JsonValue &meshJson, JsonParser::JsonValue &gltfJson, const std::string &binStr);
-    void LoadVertices(Mesh &mesh, JsonParser::JsonValue &gltfJson, const std::string &binStr, JsonParser::JsonValue &attributes);
-    void LoadIndices(Mesh &mesh, JsonParser::JsonValue &gltfJson, const std::string &binStr, int indiceIndex);
+    Primitive LoadPrimitive(JsonParser::JsonValue &primitiveJson, JsonParser::JsonValue &gltfJson, const std::string &binStr);
+    void LoadVertices(Primitive &primitive, JsonParser::JsonValue &gltfJson, const std::string &binStr, JsonParser::JsonValue &attributes);
+    void LoadIndices(Primitive &primitive, JsonParser::JsonValue &gltfJson, const std::string &binStr, int indiceIndex);
     Skin LoadSkin(JsonParser::JsonValue &skinJson, JsonParser::JsonValue &gltfJson, const std::string &binStr);
     Material LoadMaterial(JsonParser::JsonValue &materialJson);
     PbrMetallicRoughness LoadPBR(JsonParser::JsonValue &pbrJson);
