@@ -136,7 +136,7 @@ namespace Glb
         if (nodeJson.KeyExist("translation"))
             translate = {nodeJson["translation"][0], nodeJson["translation"][1], nodeJson["translation"][2]};
 
-        ml::vec4 quat(0, 0, 0, 0);
+        ml::vec4 quat(0, 0, 0, 1);
         if (nodeJson.KeyExist("rotation"))
             quat = {nodeJson["rotation"][0], nodeJson["rotation"][1], nodeJson["rotation"][2], nodeJson["rotation"][3]};
 
@@ -443,6 +443,8 @@ namespace Glb
                     sampler.nbElement = 3;
                 else if (type == "VEC4")
                     sampler.nbElement = 4;
+                else
+                    std::cerr << "type unknown: " << type << std::endl;
 
                 auto bufferView = gltfJson["bufferViews"][bufferViewIndex];
                 size_t byteOffset = bufferView["byteOffset"];
