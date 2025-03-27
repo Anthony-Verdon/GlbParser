@@ -1,14 +1,12 @@
 #include "GlbParser/GlbParser.hpp"
-#include "JsonParser/JsonParser.hpp"
-#include "JsonParser/JsonValue.hpp"
 #include "Toolbox.hpp"
 #include <stdexcept>
 #include <iostream>
 #include <fstream>
-#include "geometry/geometry.hpp"
+
 namespace Glb
 {
-    std::pair<JsonParser::JsonValue, std::string> LoadBinaryFile(const std::string &path, bool generateFiles)
+    std::pair<Json::Node, std::string> LoadBinaryFile(const std::string &path, bool generateFiles)
     {
         if (!Toolbox::checkExtension(path, ".glb"))
             throw(std::runtime_error("wrong extension, only parse .glb file"));
@@ -24,7 +22,7 @@ namespace Glb
         
         // Parse JSON
         stringIt it = jsonStr.begin();
-        JsonParser::JsonValue gltfJson = JsonParser::ParseJson(jsonStr, it);
+        Json::Node gltfJson = Json::ParseJson(jsonStr, it);
         
         // Extract binary buffer
         uint32_t binOffset = 20 + jsonLength;
@@ -47,7 +45,7 @@ namespace Glb
         return (std::make_pair(gltfJson, binStr));
     }
 
-    GltfData LoadGltf(JsonParser::JsonValue &gltfJson, const std::string &binStr)
+    GltfData LoadGltf(Json::Node &gltfJson, const std::string &binStr)
     {
         GltfData data;
 
@@ -89,7 +87,7 @@ namespace Glb
         return (data);
     }
 
-    Scene LoadScene(JsonParser::JsonValue &sceneJson)
+    Scene LoadScene(Json::Node &sceneJson)
     {
         Scene scene;
 
@@ -100,7 +98,7 @@ namespace Glb
         return (scene);
     }
     
-    Node LoadNode(JsonParser::JsonValue &nodeJson)
+    Node LoadNode(Json::Node &nodeJson)
     {
         Node node;
         
@@ -126,7 +124,7 @@ namespace Glb
         return (node);
     }
 
-    ml::mat4 CalculateTransform(JsonParser::JsonValue &nodeJson)
+    ml::mat4 CalculateTransform(Json::Node &nodeJson)
     {
         ml::vec3 scale(1, 1, 1);
         if (nodeJson.KeyExist("scale"))
@@ -140,14 +138,14 @@ namespace Glb
         if (nodeJson.KeyExist("rotation"))
             quat = {nodeJson["rotation"][0], nodeJson["rotation"][1], nodeJson["rotation"][2], nodeJson["rotation"][3]};
 
-        ml::mat4 transform = ml::translate(translate)
-                * ml::rotate(quat)
-                * ml::scale(scale);  
+        ml::mat4 transform = ml::translate(ml::mat4(1.0f), translate)
+                * ml::rotate(ml::mat4(1.0f), quat)
+                * ml::scale(ml::mat4(1.0f), scale);  
 
         return (transform);
     }
 
-    Mesh LoadMesh(JsonParser::JsonValue &meshJson, JsonParser::JsonValue &gltfJson, const std::string &binStr)
+    Mesh LoadMesh(Json::Node &meshJson, Json::Node &gltfJson, const std::string &binStr)
     {
         Mesh mesh;
 
@@ -158,7 +156,7 @@ namespace Glb
         return (mesh);
     }
 
-    Primitive LoadPrimitive(JsonParser::JsonValue &primitiveJson, JsonParser::JsonValue &gltfJson, const std::string &binStr)
+    Primitive LoadPrimitive(Json::Node &primitiveJson, Json::Node &gltfJson, const std::string &binStr)
     {
         Primitive primitive;
 
@@ -172,7 +170,7 @@ namespace Glb
         return (primitive);
     }
 
-    void LoadVertices(Primitive &primitive, JsonParser::JsonValue &gltfJson, const std::string &binStr, JsonParser::JsonValue &attributes)
+    void LoadVertices(Primitive &primitive, Json::Node &gltfJson, const std::string &binStr, Json::Node &attributes)
     {
         std::vector<float> positions;
         std::vector<float> textureCoords;
@@ -182,7 +180,7 @@ namespace Glb
 
         for (auto it = attributes.begin(); it != attributes.end(); it++)
         {
-            auto accessor = gltfJson["accessors"][it.value()];
+            auto accessor = gltfJson["accessors"][(int)it.value()];
             size_t bufferViewIndex = accessor["bufferView"];
             size_t count = accessor["count"];
             size_t componentType = accessor["componentType"];
@@ -286,7 +284,7 @@ namespace Glb
         primitive.vertices = vertices;
     }
 
-    void LoadIndices(Primitive &primitive, JsonParser::JsonValue &gltfJson, const std::string &binStr, int indiceIndex)
+    void LoadIndices(Primitive &primitive, Json::Node &gltfJson, const std::string &binStr, int indiceIndex)
     {
         auto accessor = gltfJson["accessors"][indiceIndex];
         size_t bufferViewIndex = accessor["bufferView"];
@@ -302,7 +300,7 @@ namespace Glb
         primitive.indices = indices;
     }
 
-    Skin LoadSkin(JsonParser::JsonValue &skinJson, JsonParser::JsonValue &gltfJson, const std::string &binStr)
+    Skin LoadSkin(Json::Node &skinJson, Json::Node &gltfJson, const std::string &binStr)
     {
         Skin skin;
 
@@ -337,7 +335,7 @@ namespace Glb
         return (skin);
     }
 
-    Material LoadMaterial(JsonParser::JsonValue &materialJson)
+    Material LoadMaterial(Json::Node &materialJson)
     {
         Material material;
 
@@ -363,7 +361,7 @@ namespace Glb
         return (material);
     }
 
-    PbrMetallicRoughness LoadPBR(JsonParser::JsonValue &pbrJson)
+    PbrMetallicRoughness LoadPBR(Json::Node &pbrJson)
     {
         PbrMetallicRoughness pbr;
 
@@ -381,7 +379,7 @@ namespace Glb
         return (pbr);
     }
 
-    Image LoadImage(JsonParser::JsonValue &imageJson, JsonParser::JsonValue &gltfJson, const std::string &binStr)
+    Image LoadImage(Json::Node &imageJson, Json::Node &gltfJson, const std::string &binStr)
     {
         Image image;
 
@@ -396,7 +394,7 @@ namespace Glb
         return (image);
     }
 
-    Animation LoadAnimation(JsonParser::JsonValue &animationJson, JsonParser::JsonValue &gltfJson, const std::string &binStr)
+    Animation LoadAnimation(Json::Node &animationJson, Json::Node &gltfJson, const std::string &binStr)
     {
         Animation animation;
         animation.name = std::string(animationJson["name"]);

@@ -2,9 +2,8 @@
 
 #include <string>
 #include <map>
-#include "JsonParser/JsonValue.hpp"
-#include "vec/vec.hpp"
-#include "mat/mat.hpp"
+#include "Json/Json.hpp"
+#include "Matrix/Matrix.hpp"
 
 namespace Glb
 {
@@ -154,18 +153,18 @@ namespace Glb
         std::vector<Animation> animations;
     };
 
-    std::pair<JsonParser::JsonValue, std::string> LoadBinaryFile(const std::string &path, bool generateFiles = false);
-    GltfData LoadGltf(JsonParser::JsonValue &gltfJson, const std::string &binStr);
-    Scene LoadScene(JsonParser::JsonValue &sceneJson);
-    Node LoadNode(JsonParser::JsonValue &nodeJson);
-    ml::mat4 CalculateTransform(JsonParser::JsonValue &nodeJson);
-    Mesh LoadMesh(JsonParser::JsonValue &meshJson, JsonParser::JsonValue &gltfJson, const std::string &binStr);
-    Primitive LoadPrimitive(JsonParser::JsonValue &primitiveJson, JsonParser::JsonValue &gltfJson, const std::string &binStr);
-    void LoadVertices(Primitive &primitive, JsonParser::JsonValue &gltfJson, const std::string &binStr, JsonParser::JsonValue &attributes);
-    void LoadIndices(Primitive &primitive, JsonParser::JsonValue &gltfJson, const std::string &binStr, int indiceIndex);
-    Skin LoadSkin(JsonParser::JsonValue &skinJson, JsonParser::JsonValue &gltfJson, const std::string &binStr);
-    Material LoadMaterial(JsonParser::JsonValue &materialJson);
-    PbrMetallicRoughness LoadPBR(JsonParser::JsonValue &pbrJson);
-    Image LoadImage(JsonParser::JsonValue &imageJson, JsonParser::JsonValue &gltfJson, const std::string &binStr);
-    Animation LoadAnimation(JsonParser::JsonValue &animationJson, JsonParser::JsonValue &gltfJson, const std::string &binStr);
+    std::pair<Json::Node, std::string> LoadBinaryFile(const std::string &path, bool generateFiles = false);
+    GltfData LoadGltf(Json::Node &gltfJson, const std::string &binStr);
+    Scene LoadScene(Json::Node &sceneJson);
+    Node LoadNode(Json::Node &nodeJson);
+    ml::mat4 CalculateTransform(Json::Node &nodeJson);
+    Mesh LoadMesh(Json::Node &meshJson, Json::Node &gltfJson, const std::string &binStr);
+    Primitive LoadPrimitive(Json::Node &primitiveJson, Json::Node &gltfJson, const std::string &binStr);
+    void LoadVertices(Primitive &primitive, Json::Node &gltfJson, const std::string &binStr, Json::Node &attributes);
+    void LoadIndices(Primitive &primitive, Json::Node &gltfJson, const std::string &binStr, int indiceIndex);
+    Skin LoadSkin(Json::Node &skinJson, Json::Node &gltfJson, const std::string &binStr);
+    Material LoadMaterial(Json::Node &materialJson);
+    PbrMetallicRoughness LoadPBR(Json::Node &pbrJson);
+    Image LoadImage(Json::Node &imageJson, Json::Node &gltfJson, const std::string &binStr);
+    Animation LoadAnimation(Json::Node &animationJson, Json::Node &gltfJson, const std::string &binStr);
 }
