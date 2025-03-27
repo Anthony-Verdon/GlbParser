@@ -4,6 +4,3 @@
 [submodule "submodules/Json"]
 	path = submodules/Json
 	url = git@github.com:Anthony-Verdon/Json.git
-[submodule "submodules/Toolbox"]
-	path = submodules/Toolbox
-	url = git@github.com:Anthony-Verdon/Toolbox.git
